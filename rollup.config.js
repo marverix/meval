@@ -23,6 +23,7 @@ var config = {
     name: 'meval',
     banner: `/* meval v${$package.version} ` +
       `| Copyright ${new Date().getFullYear()} (c) Marek Sierociński` +
+      '| https://github.com/marverix/meval/blob/master/LICENSE ' +
       '*/',
     globals: globals
   },

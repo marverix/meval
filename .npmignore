@@ -12,16 +12,11 @@ coverage/
 # Source files
 src/
 
-# Rollup config
+# Configs
+.babelrc
 rollup.config.js
-
-# Bower config
 bower.json
-
-# Lint config
 .eslint*
-
-# Husky config
 .huskyrc.json
 
 # npm files
@@ -31,5 +26,6 @@ bower.json
 .travis*
 
 # IDE files
+.editorconfig
 .vscode/
 .idea/

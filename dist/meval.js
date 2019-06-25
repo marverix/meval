@@ -1,4 +1,4 @@
-/* meval v0.1.0 | Copyright 2019 (c) Marek Sierociński*/
+/* meval v0.1.0 | Copyright 2019 (c) Marek Sierociński| https://github.com/marverix/meval/blob/master/LICENSE */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
