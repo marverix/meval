@@ -1,0 +1,5 @@
+_static/
+coverage/
+docs/
+dist/
+example/

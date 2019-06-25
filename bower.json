@@ -1,0 +1,16 @@
+{
+  "name": "meval",
+  "description": "Mimic eval but in given context",
+  "moduleType": [
+    "umd"
+  ],
+  "main": "dist/meval.js",
+  "homepage": "https://github.com/marverix/meval#readme",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:marverix/meval.git"
+  },
+  "ignore": [
+    "src", "test"
+  ]
+}

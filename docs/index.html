@@ -1,0 +1,139 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Home | meval</title>
+    <link type="text/css" rel="stylesheet" href="styles/font-awesome.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/main.css">
+
+    
+</head>
+<body>
+<div class="main-container">
+    <input type="checkbox" id="nav-trigger" class="nav-trigger">
+    <label for="nav-trigger" class="navicon-button x">
+      <div class="navicon"></div>
+    </label>
+    <label for="nav-trigger" class="overlay"></label>
+    <nav class="lnb" id="lnb">
+        <div class="nav-search js-search">
+            <div class="logo" style="">
+                <img src="img/toast-ui.png" width="100%" height="100%">
+            </div>
+            <input type="text" placeholder="Search docs">
+            <ul class="searched-list"></ul>
+        </div>
+
+        <div class="nav-main">
+            <h1><a href="index.html" class="link">meval</a></h1>
+            <span class="version">
+            
+                v0.1.0
+            
+            </span>
+        </div>
+
+        
+
+        <div class="scroll">
+        <div class="nav-api hidden"><h3>Global</h3><ul><li class="nav-item"><a href="global.html#Evaluation">Evaluation</a></li><li class="nav-item"><a href="global.html#get2ArgOpRegex">get2ArgOpRegex</a></li><li class="nav-item"><a href="global.html#meval">meval</a></li><li class="nav-item"><a href="global.html#run">run</a></li></ul></div>
+        </div>
+    </nav>
+
+    <div class="content">
+        <ul class="breadcrumbs">
+            <li><a href="index.html">Docs</a> »</li>
+            <li>Home</li>
+        </ul>
+        <hr>
+        
+
+
+
+    
+
+
+
+
+
+
+
+
+
+    
+
+
+<article class="readme"><h1>meval - m(imic) eval</h1>
+<p><a href="LICENSE"><img src="https://img.shields.io/badge/License-ISC-blue.svg" alt="License: ISC"></a></p>
+<h2>Info</h2>
+<p>This is <em>not</em> a &quot;safe JavaScript eval&quot;. This is small library that only mimics <code>eval()</code> functionality to some point.
+It always returns the value of given expression. You always need to provide context in which it will be executed
+(context <em>must be</em> an Object).</p>
+<h3>What's working</h3>
+<ul>
+<li>simple one-line expressions</li>
+<li>all two argument operators: <code>*</code>, <code>/</code>, <code>%</code>, <code>+</code>, <code>-</code>, <code>&gt;=</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&lt;</code>, <code>===</code>, <code>!==</code>, <code>==</code>, <code>!=</code>, <code>&amp;&amp;</code> and <code>||</code></li>
+<li>three argument operator: <code>?:</code></li>
+<li>Strings, Numbers (both Integers and Floats)</li>
+<li>using accessors</li>
+<li>calling methods</li>
+<li>accessing allowed global Objects such as <code>Date</code>, <code>Math</code>, <code>Number</code>, <code>String</code>, <code>Array</code> and <code>Object</code></li>
+<li>simple mixing above</li>
+</ul>
+<h3>TODO</h3>
+<ul>
+<li>support <code>new</code></li>
+<li>support <code>typeof</code></li>
+<li>support both <code>[]</code> and <code>()</code></li>
+<li>support nested methods (e.g. <code>Math.min(1, Math.max(item.a, item.b))</code>)</li>
+<li>maybe validating proper JS syntax?</li>
+</ul>
+<h2>Usage</h2>
+<pre class="prettyprint source lang-js"><code>/**
+ * @param {String} expression Expression to be parsed
+ * @param {Object} context Context for expression
+ */
+meval(expression, context)
+</code></pre>
+<h3>Example</h3>
+<pre class="prettyprint source lang-js"><code>&lt;&lt; meval('item.a + item.b * 5', { item: { a: 2, b: 3 } })
+>> 17
+</code></pre>
+<h2>Authors</h2>
+<ul>
+<li><strong>Marek Sierociński</strong> - <a href="https://github.com/marverix">marverix</a></li>
+</ul>
+<p>See also the list of <a href="https://github.com/marverix/meval/contributors">contributors</a>
+who participated in this project.</p>
+<h2>License</h2>
+<p>This project is licensed under the ISC License - see the <a href="LICENSE">LICENSE</a> file for details.</p></article>
+
+
+
+
+
+
+        <hr>
+        <footer>
+            <strong>Copyright 2019 &copy; Marek Sierociński</strong><br/>
+            Documented with <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.2</a>
+        </footer>
+    </div>
+</div>
+
+<script src="js/jquery.min.js"></script>
+<script>
+
+window.isApi = true
+window.isManual = false
+window.doc = {
+    name: 'meval',
+    longname: 'package:meval',
+}
+
+if (!doc.name) isApi = false
+
+</script>
+<script src="js/rtd.js"></script>
+</body>
+</html>

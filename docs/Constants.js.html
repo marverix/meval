@@ -1,0 +1,111 @@
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Source: Constants.js | meval</title>
+    <link type="text/css" rel="stylesheet" href="styles/font-awesome.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/main.css">
+
+    
+</head>
+<body>
+<div class="main-container">
+    <input type="checkbox" id="nav-trigger" class="nav-trigger">
+    <label for="nav-trigger" class="navicon-button x">
+      <div class="navicon"></div>
+    </label>
+    <label for="nav-trigger" class="overlay"></label>
+    <nav class="lnb" id="lnb">
+        <div class="nav-search js-search">
+            <div class="logo" style="">
+                <img src="img/toast-ui.png" width="100%" height="100%">
+            </div>
+            <input type="text" placeholder="Search docs">
+            <ul class="searched-list"></ul>
+        </div>
+
+        <div class="nav-main">
+            <h1><a href="index.html" class="link">meval</a></h1>
+            <span class="version">
+            
+                v0.1.0
+            
+            </span>
+        </div>
+
+        
+
+        <div class="scroll">
+        <div class="nav-api hidden"><h3>Global</h3><ul><li class="nav-item"><a href="global.html#Evaluation">Evaluation</a></li><li class="nav-item"><a href="global.html#get2ArgOpRegex">get2ArgOpRegex</a></li><li class="nav-item"><a href="global.html#meval">meval</a></li><li class="nav-item"><a href="global.html#run">run</a></li></ul></div>
+        </div>
+    </nav>
+
+    <div class="content">
+        <ul class="breadcrumbs">
+            <li><a href="index.html">Docs</a> »</li>
+            <li>Source: Constants.js</li>
+        </ul>
+        <hr>
+        
+
+
+
+    
+<article>
+    <pre class="prettyprint source linenums"><code>const REGEXP = {};
+REGEXP.NAME = '[A-Za-z$_][A-Za-z0-9$_.]*';
+REGEXP.METHOD = `(${REGEXP.NAME})\\((.*)\\)`;
+REGEXP.PART = `${REGEXP.NAME}(?:\\(.*\\))?`;
+REGEXP.THREE_ARG = '^(.+)\\?(.+):(.+)$';
+REGEXP.ACCESSOR = `(${REGEXP.PART})\\.(${REGEXP.PART})`;
+REGEXP.STRING = '(["\\\'])([^"]*)\\1';
+REGEXP.FLOAT = '[0-9]+\\.[0-9]+';
+REGEXP.INTEGER = '[0-9]+';
+
+const ALLOWED_GLOBAL_OBJECTS = ['String', 'Number', 'Array', 'Object', 'Date', 'Math'];
+
+/**
+ * Get regexp string for 2 argument operator
+ * @param {String} op Operator
+ */
+function get2ArgOpRegex(op) {
+  return `^(.+)(${op})(.+)$`;
+}
+
+module.exports = {
+  REGEXP,
+  ALLOWED_GLOBAL_OBJECTS,
+  get2ArgOpRegex
+};
+</code></pre>
+</article>
+
+
+
+
+
+        <hr>
+        <footer>
+            <strong>Copyright 2019 &copy; Marek Sierociński</strong><br/>
+            Documented with <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.2</a>
+        </footer>
+    </div>
+</div>
+
+<script src="js/jquery.min.js"></script>
+<script>
+
+window.isApi = true
+window.isManual = false
+window.doc = {
+    name: '',
+    longname: '',
+}
+
+if (!doc.name) isApi = false
+
+</script>
+<script src="js/rtd.js"></script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Source: Evaluation.js | meval</title>
+    <link type="text/css" rel="stylesheet" href="styles/font-awesome.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/main.css">
+
+    
+</head>
+<body>
+<div class="main-container">
+    <input type="checkbox" id="nav-trigger" class="nav-trigger">
+    <label for="nav-trigger" class="navicon-button x">
+      <div class="navicon"></div>
+    </label>
+    <label for="nav-trigger" class="overlay"></label>
+    <nav class="lnb" id="lnb">
+        <div class="nav-search js-search">
+            <div class="logo" style="">
+                <img src="img/toast-ui.png" width="100%" height="100%">
+            </div>
+            <input type="text" placeholder="Search docs">
+            <ul class="searched-list"></ul>
+        </div>
+
+        <div class="nav-main">
+            <h1><a href="index.html" class="link">meval</a></h1>
+            <span class="version">
+            
+                v0.1.0
+            
+            </span>
+        </div>
+
+        
+
+        <div class="scroll">
+        <div class="nav-api hidden"><h3>Global</h3><ul><li class="nav-item"><a href="global.html#Evaluation">Evaluation</a></li><li class="nav-item"><a href="global.html#get2ArgOpRegex">get2ArgOpRegex</a></li><li class="nav-item"><a href="global.html#meval">meval</a></li><li class="nav-item"><a href="global.html#run">run</a></li></ul></div>
+        </div>
+    </nav>
+
+    <div class="content">
+        <ul class="breadcrumbs">
+            <li><a href="index.html">Docs</a> »</li>
+            <li>Source: Evaluation.js</li>
+        </ul>
+        <hr>
+        
+
+
+
+    
+<article>
+    <pre class="prettyprint source linenums"><code>import { REGEXP, ALLOWED_GLOBAL_OBJECTS, get2ArgOpRegex } from './Constants';
+
+/**
+ * Evaluation of expression in given context
+ *
+ * @param {String} expression
+ * @param {Object} context
+ */
+function Evaluation(expression, context) {
+  if(typeof expression !== 'string') {
+    throw new TypeError('Expressions must be a string');
+  }
+
+  this.expression = expression;
+  this.context = context;
+
+  /**
+   * Run
+   * Start digesting expression
+   */
+  this.run = function run() {
+    this.current = [];
+    return this._digest(this.expression);
+  };
+
+  /**
+   * Digest given expression
+   * @param {String} expression
+   * @private
+   */
+  this._digest = function _digest(expression) {
+    var parts;
+    expression = expression.trim();
+
+    // Check 3 argument operator
+    parts = expression.match(new RegExp(REGEXP.THREE_ARG));
+    if(parts != null) {
+      return this._digest(parts[1]) ? this._digest(parts[2]) : this._digest(parts[3]);
+    }
+
+    // Check 2 argument operstors
+
+    // ||
+    parts = this._match2ArgOp('\\|\\|', expression);
+    if(parts != null) {
+      return parts[1] || parts[3];
+    }
+
+    // &amp;&amp;
+    parts = this._match2ArgOp('&amp;&amp;', expression);
+    if(parts != null) {
+      return parts[1] &amp;&amp; parts[3];
+    }
+
+    // !==
+    parts = this._match2ArgOp('!==', expression);
+    if(parts != null) {
+      return parts[1] !== parts[3];
+    }
+
+    // ===
+    parts = this._match2ArgOp('===', expression);
+    if(parts != null) {
+      return parts[1] === parts[3];
+    }
+
+    // !=
+    parts = this._match2ArgOp('!=', expression);
+    if(parts != null) {
+      return parts[1] != parts[3];
+    }
+
+    // ==
+    parts = this._match2ArgOp('==', expression);
+    if(parts != null) {
+      return parts[1] == parts[3];
+    }
+
+    // &lt;=
+    parts = this._match2ArgOp('&lt;=', expression);
+    if(parts != null) {
+      return parts[1] &lt;= parts[3];
+    }
+
+    // >=
+    parts = this._match2ArgOp('>=', expression);
+    if(parts != null) {
+      return parts[1] >= parts[3];
+    }
+
+    // &lt;
+    parts = this._match2ArgOp('&lt;', expression);
+    if(parts != null) {
+      return parts[1] &lt; parts[3];
+    }
+
+    // >
+    parts = this._match2ArgOp('>', expression);
+    if(parts != null) {
+      return parts[1] > parts[3];
+    }
+
+    // -
+    parts = this._match2ArgOp('-', expression);
+    if(parts != null) {
+      return parts[1] - parts[3];
+    }
+
+    // +
+    parts = this._match2ArgOp('\\+', expression);
+    if(parts != null) {
+      return parts[1] + parts[3];
+    }
+
+    // %
+    parts = this._match2ArgOp('%', expression);
+    if(parts != null) {
+      return parts[1] % parts[3];
+    }
+
+    // /
+    parts = this._match2ArgOp('\\/', expression);
+    if(parts != null) {
+      return parts[1] / parts[3];
+    }
+
+    // *
+    parts = this._match2ArgOp('\\*', expression);
+    if(parts != null) {
+      return parts[1] * parts[3];
+    }
+
+
+    // Check accessor
+    parts = expression.match(new RegExp(REGEXP.ACCESSOR));
+    if(parts != null) {
+      let leftSide = this._digest(parts[1]);
+      let rightSide = parts[2];
+
+      parts = rightSide.match(new RegExp(REGEXP.METHOD));
+      if(parts == null) {
+        return leftSide[rightSide];
+      } else {
+        let args = parts[2].split(',');
+        for(let i = 0; i &lt; args.length; i++) {
+          args[i] = this._digest(args[i]);
+        }
+        return leftSide[parts[1]].apply(leftSide, args);
+      }
+    }
+
+    // Check string
+    parts = expression.match(new RegExp(REGEXP.STRING));
+    if(parts != null) {
+      return parts[2];
+    }
+
+    // Check float
+    parts = expression.match(new RegExp(REGEXP.FLOAT));
+    if(parts != null) {
+      return parseFloat(parts[0]);
+    }
+
+    // Check integer
+    parts = expression.match(new RegExp(REGEXP.INTEGER));
+    if(parts != null) {
+      return parseInt(parts[0]);
+    }
+
+    // Check allowed global objects
+    if(ALLOWED_GLOBAL_OBJECTS.indexOf(expression) > -1) {
+      return global[expression];
+    }
+
+    // Return
+    return this.context[expression];
+  };
+
+  /**
+   * Match 2 argument operator
+   * @param {String} op Operator to check
+   * @param {String} expression
+   * @private
+   */
+  this._match2ArgOp = function _match2ArgOp(op, expression) {
+    var parts = expression.match(new RegExp(get2ArgOpRegex(op)));
+    if(parts != null) {
+      parts[1] = this._digest(parts[1]);
+      parts[3] = this._digest(parts[3]);
+    }
+    return parts;
+  };
+}
+
+export default Evaluation;
+</code></pre>
+</article>
+
+
+
+
+
+        <hr>
+        <footer>
+            <strong>Copyright 2019 &copy; Marek Sierociński</strong><br/>
+            Documented with <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.2</a>
+        </footer>
+    </div>
+</div>
+
+<script src="js/jquery.min.js"></script>
+<script>
+
+window.isApi = true
+window.isManual = false
+window.doc = {
+    name: '',
+    longname: '',
+}
+
+if (!doc.name) isApi = false
+
+</script>
+<script src="js/rtd.js"></script>
+</body>
+</html>
