@@ -1,5 +1,7 @@
 # meval - m(imic) eval
 
+[![Build Status](https://img.shields.io/travis/com/marverix/meval/master.svg)](https://travis-ci.com/marverix/meval)
+[![Current Release](https://img.shields.io/github/release/marverix/meval.svg)](releases)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](LICENSE)
 
 ## Info

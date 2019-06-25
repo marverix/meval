@@ -1,7 +1,7 @@
 {
   "name": "meval",
   "version": "0.1.0",
-  "description": "Mimic eval but in given context",
+  "description": "Mimic eval in given context",
   "main": "dist/meval.js",
   "scripts": {
     "build": "npx rollup -c",

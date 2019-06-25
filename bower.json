@@ -1,6 +1,6 @@
 {
   "name": "meval",
-  "description": "Mimic eval but in given context",
+  "description": "Mimic eval in given context",
   "moduleType": [
     "umd"
   ],
