@@ -1,4 +1,4 @@
-/* meval v0.5.0 | Copyright 2019 (c) Marek Sierociński| https://github.com/marverix/meval/blob/master/LICENSE */
+/* meval v0.5.1 | Copyright 2019 (c) Marek Sierociński| https://github.com/marverix/meval/blob/master/LICENSE */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -102,17 +102,25 @@
       // ||
 
 
-      parts = this._match2ArgOp('\\|\\|', expression);
+      parts = this._match2ArgOp('\\|\\|', expression, false);
 
       if (parts != null) {
-        return parts[1] || parts[3];
+        if (parts[1]) {
+          return parts[1];
+        } else {
+          return this._digest(parts[3]);
+        }
       } // &&
 
 
-      parts = this._match2ArgOp('&&', expression);
+      parts = this._match2ArgOp('&&', expression, false);
 
       if (parts != null) {
-        return parts[1] && parts[3];
+        if (parts[1]) {
+          return this._digest(parts[3]);
+        }
+
+        return false;
       } // !==
 
 
@@ -324,11 +332,12 @@
 
 
     this._match2ArgOp = function _match2ArgOp(op, expression) {
+      var digestRightSide = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
       var parts = expression.match(new RegExp(Constants_4(op)));
 
       if (parts != null) {
         parts[1] = this._digest(parts[1]);
-        parts[3] = this._digest(parts[3]);
+        parts[3] = digestRightSide ? this._digest(parts[3]) : parts[3];
       }
 
       return parts;

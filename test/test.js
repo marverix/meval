@@ -344,6 +344,55 @@ describe('meval', function() {
     });
   });
 
+  describe('Test 2 argument operator: &&', function() {
+    it('Should return true', function() {
+      var ret = meval('true && true', testContext);
+      expect(ret).to.be.true;
+    });
+
+    it('Should return false', function() {
+      var ret = meval('true && false', testContext);
+      expect(ret).to.be.false;
+    });
+
+    it('Should return false', function() {
+      var ret = meval('false && true', testContext);
+      expect(ret).to.be.false;
+    });
+
+    it('Should return false', function() {
+      var ret = meval('false && false', testContext);
+      expect(ret).to.be.false;
+    });
+  });
+
+  describe('Test 2 argument operator: ||', function() {
+    it('Should return true', function() {
+      var ret = meval('true || true', testContext);
+      expect(ret).to.be.true;
+    });
+
+    it('Should return true', function() {
+      var ret = meval('true || false', testContext);
+      expect(ret).to.be.true;
+    });
+
+    it('Should return true', function() {
+      var ret = meval('false || true', testContext);
+      expect(ret).to.be.true;
+    });
+
+    it('Should return false', function() {
+      var ret = meval('false || false', testContext);
+      expect(ret).to.be.false;
+    });
+
+    it('Should return true and should not check right side', function() {
+      var ret = meval('condition || item.x.notExisting', testContext);
+      expect(ret).to.be.true;
+    });
+  });
+
   describe('Test mixing 2 argument operators', function() {
     it('Should return 17', function() {
       var ret = meval('item.a + item.b * 5', testContext);

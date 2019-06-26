@@ -46,15 +46,22 @@ function Evaluation(expression, context) {
     // Check 2 argument operators
 
     // ||
-    parts = this._match2ArgOp('\\|\\|', expression);
+    parts = this._match2ArgOp('\\|\\|', expression, false);
     if(parts != null) {
-      return parts[1] || parts[3];
+      if(parts[1]) {
+        return parts[1];
+      } else {
+        return this._digest(parts[3]);
+      }
     }
 
     // &&
-    parts = this._match2ArgOp('&&', expression);
+    parts = this._match2ArgOp('&&', expression, false);
     if(parts != null) {
-      return parts[1] && parts[3];
+      if(parts[1]) {
+        return this._digest(parts[3]);
+      }
+      return false;
     }
 
     // !==
@@ -238,11 +245,11 @@ function Evaluation(expression, context) {
    * @param {String} expression
    * @private
    */
-  this._match2ArgOp = function _match2ArgOp(op, expression) {
+  this._match2ArgOp = function _match2ArgOp(op, expression, digestRightSide = true) {
     var parts = expression.match(new RegExp(get2ArgOpRegex(op)));
     if(parts != null) {
       parts[1] = this._digest(parts[1]);
-      parts[3] = this._digest(parts[3]);
+      parts[3] = digestRightSide ? this._digest(parts[3]) : parts[3];
     }
     return parts;
   };
