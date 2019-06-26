@@ -1,9 +1,23 @@
-/* meval v0.2.0 | Copyright 2019 (c) Marek Sierociński| https://github.com/marverix/meval/blob/master/LICENSE */
+/* meval v0.4.0 | Copyright 2019 (c) Marek Sierociński| https://github.com/marverix/meval/blob/master/LICENSE */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
   (global = global || self, global.meval = factory());
 }(this, function () { 'use strict';
+
+  function _typeof(obj) {
+    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+      _typeof = function (obj) {
+        return typeof obj;
+      };
+    } else {
+      _typeof = function (obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+      };
+    }
+
+    return _typeof(obj);
+  }
 
   var REGEXP = {};
   REGEXP.NAME = '[A-Za-z$_][A-Za-z0-9$_.]*';
@@ -197,6 +211,13 @@
 
       if (parts != null) {
         return !parts[2];
+      } // typeof
+
+
+      parts = this._match1ArgOp('typeof', expression);
+
+      if (parts != null) {
+        return _typeof(parts[2]);
       } // Check accessor
 
 

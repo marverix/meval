@@ -143,6 +143,12 @@ function Evaluation(expression, context) {
       return !parts[2];
     }
 
+    // typeof
+    parts = this._match1ArgOp('typeof', expression);
+    if(parts != null) {
+      return typeof parts[2];
+    }
+
     // Check accessor
     parts = expression.match(new RegExp(REGEXP.ACCESSOR));
     if(parts != null) {

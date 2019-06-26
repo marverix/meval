@@ -29,7 +29,7 @@
             <h1><a href="index.html" class="link">meval</a></h1>
             <span class="version">
             
-                v0.3.0
+                v0.4.0
             
             </span>
         </div>
@@ -196,6 +196,12 @@ function Evaluation(expression, context) {
     parts = this._match1ArgOp('!', expression);
     if(parts != null) {
       return !parts[2];
+    }
+
+    // typeof
+    parts = this._match1ArgOp('typeof', expression);
+    if(parts != null) {
+      return typeof parts[2];
     }
 
     // Check accessor

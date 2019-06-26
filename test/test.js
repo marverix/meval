@@ -99,6 +99,38 @@ describe('meval', function() {
     });
   });
 
+  describe('Test 1 argument operator: typeof', function() {
+    it('Should return "string"', function() {
+      var ret = meval('typeof str', testContext);
+      expect(ret).to.be.eq('string');
+    });
+
+    it('Should return "string"', function() {
+      var ret = meval('typeof "test"', testContext);
+      expect(ret).to.be.eq('string');
+    });
+
+    it('Should return "number"', function() {
+      var ret = meval('typeof item.a', testContext);
+      expect(ret).to.be.eq('number');
+    });
+
+    it('Should return "number"', function() {
+      var ret = meval('typeof 1.23', testContext);
+      expect(ret).to.be.eq('number');
+    });
+
+    it('Should return "boolean"', function() {
+      var ret = meval('typeof condition', testContext);
+      expect(ret).to.be.eq('boolean');
+    });
+
+    it('Should return "boolean"', function() {
+      var ret = meval('typeof true', testContext);
+      expect(ret).to.be.eq('boolean');
+    });
+  });
+
   describe('Test 2 argument operator: *', function() {
     it('Should return 6', function() {
       var ret = meval('item.a * item.b', testContext);
