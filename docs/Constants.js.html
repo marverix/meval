@@ -29,7 +29,7 @@
             <h1><a href="index.html" class="link">meval</a></h1>
             <span class="version">
             
-                v0.2.0
+                v0.3.0
             
             </span>
         </div>
@@ -37,7 +37,7 @@
         
 
         <div class="scroll">
-        <div class="nav-api hidden"><h3>Global</h3><ul><li class="nav-item"><a href="global.html#Evaluation">Evaluation</a></li><li class="nav-item"><a href="global.html#get2ArgOpRegex">get2ArgOpRegex</a></li><li class="nav-item"><a href="global.html#meval">meval</a></li><li class="nav-item"><a href="global.html#run">run</a></li></ul></div>
+        <div class="nav-api hidden"><h3>Global</h3><ul><li class="nav-item"><a href="global.html#Evaluation">Evaluation</a></li><li class="nav-item"><a href="global.html#get1ArgOpRegex">get1ArgOpRegex</a></li><li class="nav-item"><a href="global.html#get2ArgOpRegex">get2ArgOpRegex</a></li><li class="nav-item"><a href="global.html#meval">meval</a></li><li class="nav-item"><a href="global.html#run">run</a></li></ul></div>
         </div>
     </nav>
 
@@ -67,6 +67,14 @@ REGEXP.BOOLEAN = 'true|false';
 const ALLOWED_GLOBAL_OBJECTS = ['String', 'Number', 'Array', 'Object', 'Date', 'Math'];
 
 /**
+ * Get regexp string for 1 argument operator
+ * @param {String} op Operator
+ */
+function get1ArgOpRegex(op) {
+  return `^(${op})(.+)$`;
+}
+
+/**
  * Get regexp string for 2 argument operator
  * @param {String} op Operator
  */
@@ -77,6 +85,7 @@ function get2ArgOpRegex(op) {
 module.exports = {
   REGEXP,
   ALLOWED_GLOBAL_OBJECTS,
+  get1ArgOpRegex,
   get2ArgOpRegex
 };
 </code></pre>

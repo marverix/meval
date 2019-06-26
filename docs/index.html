@@ -28,7 +28,7 @@
             <h1><a href="index.html" class="link">meval</a></h1>
             <span class="version">
             
-                v0.2.0
+                v0.3.0
             
             </span>
         </div>
@@ -36,7 +36,7 @@
         
 
         <div class="scroll">
-        <div class="nav-api hidden"><h3>Global</h3><ul><li class="nav-item"><a href="global.html#Evaluation">Evaluation</a></li><li class="nav-item"><a href="global.html#get2ArgOpRegex">get2ArgOpRegex</a></li><li class="nav-item"><a href="global.html#meval">meval</a></li><li class="nav-item"><a href="global.html#run">run</a></li></ul></div>
+        <div class="nav-api hidden"><h3>Global</h3><ul><li class="nav-item"><a href="global.html#Evaluation">Evaluation</a></li><li class="nav-item"><a href="global.html#get1ArgOpRegex">get1ArgOpRegex</a></li><li class="nav-item"><a href="global.html#get2ArgOpRegex">get2ArgOpRegex</a></li><li class="nav-item"><a href="global.html#meval">meval</a></li><li class="nav-item"><a href="global.html#run">run</a></li></ul></div>
         </div>
     </nav>
 
@@ -74,6 +74,7 @@ It always returns the value of given expression. You always need to provide cont
 <h3>What's working</h3>
 <ul>
 <li>simple one-line expressions</li>
+<li>single argument operator: <code>!</code></li>
 <li>all two argument operators: <code>*</code>, <code>/</code>, <code>%</code>, <code>+</code>, <code>-</code>, <code>&gt;=</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&lt;</code>, <code>===</code>, <code>!==</code>, <code>==</code>, <code>!=</code>, <code>&amp;&amp;</code> and <code>||</code></li>
 <li>three argument operator: <code>?:</code></li>
 <li>Strings, Numbers (both Integers and Floats) and Booleans</li>
@@ -84,8 +85,7 @@ It always returns the value of given expression. You always need to provide cont
 </ul>
 <h3>TODO</h3>
 <ul>
-<li>support <code>new</code></li>
-<li>support <code>typeof</code></li>
+<li>support single argument operators: <code>new</code>, <code>typeof</code>, <code>-</code>, <code>+</code></li>
 <li>support both <code>[]</code> and <code>()</code></li>
 <li>support nested methods (e.g. <code>Math.min(1, Math.max(item.a, item.b))</code>)</li>
 <li>maybe validating proper JS syntax?</li>

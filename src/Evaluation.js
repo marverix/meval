@@ -1,4 +1,9 @@
-import { REGEXP, ALLOWED_GLOBAL_OBJECTS, get2ArgOpRegex } from './Constants';
+import {
+  REGEXP,
+  ALLOWED_GLOBAL_OBJECTS,
+  get1ArgOpRegex,
+  get2ArgOpRegex
+} from './Constants';
 
 /**
  * Evaluation of expression in given context
@@ -38,7 +43,7 @@ function Evaluation(expression, context) {
       return this._digest(parts[1]) ? this._digest(parts[2]) : this._digest(parts[3]);
     }
 
-    // Check 2 argument operstors
+    // Check 2 argument operators
 
     // ||
     parts = this._match2ArgOp('\\|\\|', expression);
@@ -130,6 +135,13 @@ function Evaluation(expression, context) {
       return parts[1] * parts[3];
     }
 
+    // Check 1 argument operators
+
+    // !
+    parts = this._match1ArgOp('!', expression);
+    if(parts != null) {
+      return !parts[2];
+    }
 
     // Check accessor
     parts = expression.match(new RegExp(REGEXP.ACCESSOR));
@@ -180,6 +192,20 @@ function Evaluation(expression, context) {
 
     // Return
     return this.context[expression];
+  };
+
+  /**
+   * Match 1 argument operator
+   * @param {String} op Operator to check
+   * @param {String} expression
+   * @private
+   */
+  this._match1ArgOp = function _match1ArgOp(op, expression) {
+    var parts = expression.match(new RegExp(get1ArgOpRegex(op)));
+    if(parts != null) {
+      parts[2] = this._digest(parts[2]);
+    }
+    return parts;
   };
 
   /**

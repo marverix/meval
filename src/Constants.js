@@ -12,6 +12,14 @@ REGEXP.BOOLEAN = 'true|false';
 const ALLOWED_GLOBAL_OBJECTS = ['String', 'Number', 'Array', 'Object', 'Date', 'Math'];
 
 /**
+ * Get regexp string for 1 argument operator
+ * @param {String} op Operator
+ */
+function get1ArgOpRegex(op) {
+  return `^(${op})(.+)$`;
+}
+
+/**
  * Get regexp string for 2 argument operator
  * @param {String} op Operator
  */
@@ -22,5 +30,6 @@ function get2ArgOpRegex(op) {
 module.exports = {
   REGEXP,
   ALLOWED_GLOBAL_OBJECTS,
+  get1ArgOpRegex,
   get2ArgOpRegex
 };

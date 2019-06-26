@@ -77,6 +77,28 @@ describe('meval', function() {
     });
   });
 
+  describe('Test 1 argument operator: !', function() {
+    it('Should return true', function() {
+      var ret = meval('!false', testContext);
+      expect(ret).to.be.true;
+    });
+
+    it('Should return false', function() {
+      var ret = meval('!true', testContext);
+      expect(ret).to.be.false;
+    });
+
+    it('Should return false', function() {
+      var ret = meval('!condition', testContext);
+      expect(ret).to.be.false;
+    });
+
+    it('Should return true', function() {
+      var ret = meval('!item.condition', testContext);
+      expect(ret).to.be.true;
+    });
+  });
+
   describe('Test 2 argument operator: *', function() {
     it('Should return 6', function() {
       var ret = meval('item.a * item.b', testContext);

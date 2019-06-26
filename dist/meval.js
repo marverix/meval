@@ -17,9 +17,18 @@
   REGEXP.BOOLEAN = 'true|false';
   var ALLOWED_GLOBAL_OBJECTS = ['String', 'Number', 'Array', 'Object', 'Date', 'Math'];
   /**
+   * Get regexp string for 1 argument operator
+   * @param {String} op Operator
+   */
+
+  function get1ArgOpRegex(op) {
+    return "^(".concat(op, ")(.+)$");
+  }
+  /**
    * Get regexp string for 2 argument operator
    * @param {String} op Operator
    */
+
 
   function get2ArgOpRegex(op) {
     return "^(.+)(".concat(op, ")(.+)$");
@@ -28,11 +37,13 @@
   var Constants = {
     REGEXP: REGEXP,
     ALLOWED_GLOBAL_OBJECTS: ALLOWED_GLOBAL_OBJECTS,
+    get1ArgOpRegex: get1ArgOpRegex,
     get2ArgOpRegex: get2ArgOpRegex
   };
   var Constants_1 = Constants.REGEXP;
   var Constants_2 = Constants.ALLOWED_GLOBAL_OBJECTS;
-  var Constants_3 = Constants.get2ArgOpRegex;
+  var Constants_3 = Constants.get1ArgOpRegex;
+  var Constants_4 = Constants.get2ArgOpRegex;
 
   /**
    * Evaluation of expression in given context
@@ -72,7 +83,7 @@
 
       if (parts != null) {
         return this._digest(parts[1]) ? this._digest(parts[2]) : this._digest(parts[3]);
-      } // Check 2 argument operstors
+      } // Check 2 argument operators
       // ||
 
 
@@ -178,6 +189,14 @@
 
       if (parts != null) {
         return parts[1] * parts[3];
+      } // Check 1 argument operators
+      // !
+
+
+      parts = this._match1ArgOp('!', expression);
+
+      if (parts != null) {
+        return !parts[2];
       } // Check accessor
 
 
@@ -239,6 +258,23 @@
       return this.context[expression];
     };
     /**
+     * Match 1 argument operator
+     * @param {String} op Operator to check
+     * @param {String} expression
+     * @private
+     */
+
+
+    this._match1ArgOp = function _match1ArgOp(op, expression) {
+      var parts = expression.match(new RegExp(Constants_3(op)));
+
+      if (parts != null) {
+        parts[2] = this._digest(parts[2]);
+      }
+
+      return parts;
+    };
+    /**
      * Match 2 argument operator
      * @param {String} op Operator to check
      * @param {String} expression
@@ -247,7 +283,7 @@
 
 
     this._match2ArgOp = function _match2ArgOp(op, expression) {
-      var parts = expression.match(new RegExp(Constants_3(op)));
+      var parts = expression.match(new RegExp(Constants_4(op)));
 
       if (parts != null) {
         parts[1] = this._digest(parts[1]);

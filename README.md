@@ -13,6 +13,7 @@ It always returns the value of given expression. You always need to provide cont
 ### What's working
 
 * simple one-line expressions
+* single argument operator: `!`
 * all two argument operators: `*`, `/`, `%`, `+`, `-`, `>=`, `<=`, `>`, `<`, `===`, `!==`, `==`, `!=`, `&&` and `||`
 * three argument operator: `?:`
 * Strings, Numbers (both Integers and Floats) and Booleans
@@ -23,8 +24,7 @@ It always returns the value of given expression. You always need to provide cont
 
 ### TODO
 
-* support `new`
-* support `typeof`
+* support single argument operators: `new`, `typeof`, `-`, `+`
 * support both `[]` and `()`
 * support nested methods (e.g. `Math.min(1, Math.max(item.a, item.b))`)
 * maybe validating proper JS syntax?
