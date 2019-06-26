@@ -6,6 +6,7 @@ import {
 } from './Constants';
 
 const commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+const searchFor3ArgOp = ['?', ':', null];
 
 /**
  * Evaluation of expression in given context
@@ -40,9 +41,8 @@ function Evaluation(expression, context) {
     expression = expression.trim();
 
     // Check 3 argument operator
-    parts = expression.match(new RegExp(REGEXP.THREE_ARG));
-    if(parts != null &&
-      !this._hasLostParanthesis(parts[1]) && !this._hasLostParanthesis(parts[2]) && !this._hasLostParanthesis(parts[3])) {
+    parts = this._match3ArgOp(expression);
+    if(parts != null) {
       return this._digest(parts[1]) ? this._digest(parts[2]) : this._digest(parts[3]);
     }
 
@@ -243,10 +243,6 @@ function Evaluation(expression, context) {
   this._match1ArgOp = function _match1ArgOp(op, expression) {
     var parts = expression.match(new RegExp(get1ArgOpRegex(op)));
     if(parts != null) {
-      if(this._hasLostParanthesis(parts[2])) {
-        return null;
-      }
-
       parts[2] = this._digest(parts[2]);
     }
     return parts;
@@ -272,6 +268,58 @@ function Evaluation(expression, context) {
   };
 
   /**
+   * Match 3 argument operator
+   * @param {String} expression
+   * @returns {Array|null}
+   */
+  this._match3ArgOp = function _match3ArgOp(expression) {
+    if(typeof expression !== 'string' || !new RegExp(REGEXP.THREE_ARG).test(expression)) {
+      return null;
+    }
+
+    var char;
+    var state = 0;
+    var parts = [{
+      match: '',
+      paranthesis: 0
+    }, {
+      match: '',
+      paranthesis: 0
+    }, {
+      match: '',
+      paranthesis: 0
+    }];
+
+    for(let i = 0; i < expression.length; i++) {
+      char = expression[i];
+
+      if(searchFor3ArgOp[state] != null && char === searchFor3ArgOp[state] && parts[state].paranthesis === 0) {
+        state++;
+      } else {
+        if(char === '(') {
+          parts[state].paranthesis++;
+        } else if(char === ')') {
+          parts[state].paranthesis--;
+        }
+
+        parts[state].match += char;
+      }
+    }
+
+    if(!parts[0].paranthesis && !parts[1].paranthesis && !parts[2].paranthesis) {
+      let ret = [expression];
+
+      for(let i = 0; i < 3; i++) {
+        ret.push( this._stripParanthesis(parts[i].match) );
+      }
+
+      return ret;
+    } else {
+      return null;
+    }
+  };
+
+  /**
    * Returns if given string has lost paranthesis
    * @param {String} str String to check
    * @returns {Boolean}
@@ -284,6 +332,15 @@ function Evaluation(expression, context) {
     closing = closing == null ? 0 : closing.length;
 
     return opening !== closing;
+  };
+
+  /**
+   * Strip paranthesis
+   * @param {String} str String that should stripped from border paranthesis
+   */
+  this._stripParanthesis = function _stripParanthesis(str) {
+    var match = str.match(/^\s*\(\s*(.+)\s*\)\s*$/);
+    return match == null ? str : match[1];
   };
 }
 

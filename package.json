@@ -1,6 +1,6 @@
 {
   "name": "meval",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Mimic eval in given context",
   "main": "dist/meval.js",
   "scripts": {

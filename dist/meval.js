@@ -1,4 +1,4 @@
-/* meval v0.6.0 | Copyright 2019 (c) Marek Sierociński| https://github.com/marverix/meval/blob/master/LICENSE */
+/* meval v0.6.1 | Copyright 2019 (c) Marek Sierociński| https://github.com/marverix/meval/blob/master/LICENSE */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -23,8 +23,8 @@
   REGEXP.NAME = '[A-Za-z$_][A-Za-z0-9$_.]*';
   REGEXP.METHOD = "(".concat(REGEXP.NAME, ")\\((.*)\\)");
   REGEXP.PART = "".concat(REGEXP.NAME, "(?:\\(.*\\))?");
-  REGEXP.PARANTHESIS = '^\\(([^)]+)\\)';
-  REGEXP.THREE_ARG = '^(.+?)\\?(.+):(.+)$';
+  REGEXP.PARANTHESIS = '(?:^| )\\(([^)]+)\\)';
+  REGEXP.THREE_ARG = '^.+\\?.+:.+$';
   REGEXP.ACCESSOR = "(".concat(REGEXP.PART, ")\\.(").concat(REGEXP.PART, ")");
   REGEXP.STRING = '(["\\\'])([^"]*)\\1';
   REGEXP.FLOAT = '[0-9]+\\.[0-9]+';
@@ -62,6 +62,7 @@
   var Constants_4 = Constants.get2ArgOpRegex;
 
   var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+  var searchFor3ArgOp = ['?', ':', null];
   /**
    * Evaluation of expression in given context
    *
@@ -96,9 +97,9 @@
       var parts;
       expression = expression.trim(); // Check 3 argument operator
 
-      parts = expression.match(new RegExp(Constants_1.THREE_ARG));
+      parts = this._match3ArgOp(expression);
 
-      if (parts != null && !this._hasLostParanthesis(parts[1]) && !this._hasLostParanthesis(parts[2]) && !this._hasLostParanthesis(parts[3])) {
+      if (parts != null) {
         return this._digest(parts[1]) ? this._digest(parts[2]) : this._digest(parts[3]);
       } // Check 2 argument operators
       // ||
@@ -327,10 +328,6 @@
       var parts = expression.match(new RegExp(Constants_3(op)));
 
       if (parts != null) {
-        if (this._hasLostParanthesis(parts[2])) {
-          return null;
-        }
-
         parts[2] = this._digest(parts[2]);
       }
 
@@ -360,6 +357,60 @@
       return parts;
     };
     /**
+     * Match 3 argument operator
+     * @param {String} expression
+     * @returns {Array|null}
+     */
+
+
+    this._match3ArgOp = function _match3ArgOp(expression) {
+      if (typeof expression !== 'string' || !new RegExp(Constants_1.THREE_ARG).test(expression)) {
+        return null;
+      }
+
+      var _char;
+
+      var state = 0;
+      var parts = [{
+        match: '',
+        paranthesis: 0
+      }, {
+        match: '',
+        paranthesis: 0
+      }, {
+        match: '',
+        paranthesis: 0
+      }];
+
+      for (var i = 0; i < expression.length; i++) {
+        _char = expression[i];
+
+        if (searchFor3ArgOp[state] != null && _char === searchFor3ArgOp[state] && parts[state].paranthesis === 0) {
+          state++;
+        } else {
+          if (_char === '(') {
+            parts[state].paranthesis++;
+          } else if (_char === ')') {
+            parts[state].paranthesis--;
+          }
+
+          parts[state].match += _char;
+        }
+      }
+
+      if (!parts[0].paranthesis && !parts[1].paranthesis && !parts[2].paranthesis) {
+        var ret = [expression];
+
+        for (var _i = 0; _i < 3; _i++) {
+          ret.push(this._stripParanthesis(parts[_i].match));
+        }
+
+        return ret;
+      } else {
+        return null;
+      }
+    };
+    /**
      * Returns if given string has lost paranthesis
      * @param {String} str String to check
      * @returns {Boolean}
@@ -372,6 +423,16 @@
       var closing = str.match(/\)/g);
       closing = closing == null ? 0 : closing.length;
       return opening !== closing;
+    };
+    /**
+     * Strip paranthesis
+     * @param {String} str String that should stripped from border paranthesis
+     */
+
+
+    this._stripParanthesis = function _stripParanthesis(str) {
+      var match = str.match(/^\s*\(\s*(.+)\s*\)\s*$/);
+      return match == null ? str : match[1];
     };
   }
 

@@ -28,7 +28,7 @@
             <h1><a href="index.html" class="link">meval</a></h1>
             <span class="version">
             
-                v0.5.1
+                v0.6.1
             
             </span>
         </div>
@@ -36,7 +36,7 @@
         
 
         <div class="scroll">
-        <div class="nav-api hidden"><h3>Global</h3><ul><li class="nav-item"><a href="global.html#Evaluation">Evaluation</a></li><li class="nav-item"><a href="global.html#get1ArgOpRegex">get1ArgOpRegex</a></li><li class="nav-item"><a href="global.html#get2ArgOpRegex">get2ArgOpRegex</a></li><li class="nav-item"><a href="global.html#meval">meval</a></li><li class="nav-item"><a href="global.html#run">run</a></li></ul></div>
+        <div class="nav-api hidden"><h3>Global</h3><ul><li class="nav-item"><a href="global.html#_hasLostParanthesis">_hasLostParanthesis</a></li><li class="nav-item"><a href="global.html#_match3ArgOp">_match3ArgOp</a></li><li class="nav-item"><a href="global.html#_stripParanthesis">_stripParanthesis</a></li><li class="nav-item"><a href="global.html#Evaluation">Evaluation</a></li><li class="nav-item"><a href="global.html#get1ArgOpRegex">get1ArgOpRegex</a></li><li class="nav-item"><a href="global.html#get2ArgOpRegex">get2ArgOpRegex</a></li><li class="nav-item"><a href="global.html#meval">meval</a></li><li class="nav-item"><a href="global.html#run">run</a></li></ul></div>
         </div>
     </nav>
 
@@ -125,12 +125,479 @@
 
     
 
+    <h4 class="name" id="_hasLostParanthesis">
+        <span class="type-signature"></span>_hasLostParanthesis<span class="signature">(str)</span>
+                   <span class="type-signature"> &rarr; {Boolean}</span>
+        
+        <span class="source">
+            <a href="Evaluation.js.html#line327"><i class="source fa fa-file-code-o"></i></a>
+        </span>
+    </h4>
+
+    
+
+    
+
+    
+
+</dt>
+
+<dd>
+    
+    <div class="description">
+        Returns if given string has lost paranthesis
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>str</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">String to check</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-returns">
+        <h5>Returns:</h5>
+        
+                
+
+
+
+<span class="param-type">Boolean</span>
+
+
+
+
+
+
+
+
+            
+    </div>
+    
+
+    
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+</dd>
+
+            
+                
+
+<dt>
+
+    
+
+    <h4 class="name" id="_match3ArgOp">
+        <span class="type-signature"></span>_match3ArgOp<span class="signature">(expression)</span>
+                   <span class="type-signature"> &rarr; {Array|null}</span>
+        
+        <span class="source">
+            <a href="Evaluation.js.html#line275"><i class="source fa fa-file-code-o"></i></a>
+        </span>
+    </h4>
+
+    
+
+    
+
+    
+
+</dt>
+
+<dd>
+    
+    <div class="description">
+        Match 3 argument operator
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>expression</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-returns">
+        <h5>Returns:</h5>
+        
+                
+
+
+
+<span class="param-type">Array</span>
+|
+
+<span class="param-type">null</span>
+
+
+
+
+
+
+
+
+            
+    </div>
+    
+
+    
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+</dd>
+
+            
+                
+
+<dt>
+
+    
+
+    <h4 class="name" id="_stripParanthesis">
+        <span class="type-signature"></span>_stripParanthesis<span class="signature">(str)</span>
+                   <span class="type-signature"></span>
+        
+        <span class="source">
+            <a href="Evaluation.js.html#line341"><i class="source fa fa-file-code-o"></i></a>
+        </span>
+    </h4>
+
+    
+
+    
+
+    
+
+</dt>
+
+<dd>
+    
+    <div class="description">
+        Strip paranthesis
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>str</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">String that should stripped from border paranthesis</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+</dd>
+
+            
+                
+
+<dt>
+
+    
+
     <h4 class="name" id="Evaluation">
         <span class="type-signature"></span>Evaluation<span class="signature">(expression, context)</span>
                    <span class="type-signature"></span>
         
         <span class="source">
-            <a href="Evaluation.js.html#line14"><i class="source fa fa-file-code-o"></i></a>
+            <a href="Evaluation.js.html#line17"><i class="source fa fa-file-code-o"></i></a>
         </span>
     </h4>
 
@@ -295,7 +762,7 @@
                    <span class="type-signature"></span>
         
         <span class="source">
-            <a href="Constants.js.html#line19"><i class="source fa fa-file-code-o"></i></a>
+            <a href="Constants.js.html#line20"><i class="source fa fa-file-code-o"></i></a>
         </span>
     </h4>
 
@@ -437,7 +904,7 @@
                    <span class="type-signature"></span>
         
         <span class="source">
-            <a href="Constants.js.html#line27"><i class="source fa fa-file-code-o"></i></a>
+            <a href="Constants.js.html#line28"><i class="source fa fa-file-code-o"></i></a>
         </span>
     </h4>
 
@@ -744,7 +1211,7 @@
                    <span class="type-signature"></span>
         
         <span class="source">
-            <a href="Evaluation.js.html#line26"><i class="source fa fa-file-code-o"></i></a>
+            <a href="Evaluation.js.html#line29"><i class="source fa fa-file-code-o"></i></a>
         </span>
     </h4>
 

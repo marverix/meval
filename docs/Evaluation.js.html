@@ -29,7 +29,7 @@
             <h1><a href="index.html" class="link">meval</a></h1>
             <span class="version">
             
-                v0.5.1
+                v0.6.1
             
             </span>
         </div>
@@ -37,7 +37,7 @@
         
 
         <div class="scroll">
-        <div class="nav-api hidden"><h3>Global</h3><ul><li class="nav-item"><a href="global.html#Evaluation">Evaluation</a></li><li class="nav-item"><a href="global.html#get1ArgOpRegex">get1ArgOpRegex</a></li><li class="nav-item"><a href="global.html#get2ArgOpRegex">get2ArgOpRegex</a></li><li class="nav-item"><a href="global.html#meval">meval</a></li><li class="nav-item"><a href="global.html#run">run</a></li></ul></div>
+        <div class="nav-api hidden"><h3>Global</h3><ul><li class="nav-item"><a href="global.html#_hasLostParanthesis">_hasLostParanthesis</a></li><li class="nav-item"><a href="global.html#_match3ArgOp">_match3ArgOp</a></li><li class="nav-item"><a href="global.html#_stripParanthesis">_stripParanthesis</a></li><li class="nav-item"><a href="global.html#Evaluation">Evaluation</a></li><li class="nav-item"><a href="global.html#get1ArgOpRegex">get1ArgOpRegex</a></li><li class="nav-item"><a href="global.html#get2ArgOpRegex">get2ArgOpRegex</a></li><li class="nav-item"><a href="global.html#meval">meval</a></li><li class="nav-item"><a href="global.html#run">run</a></li></ul></div>
         </div>
     </nav>
 
@@ -59,6 +59,9 @@
   get1ArgOpRegex,
   get2ArgOpRegex
 } from './Constants';
+
+const commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+const searchFor3ArgOp = ['?', ':', null];
 
 /**
  * Evaluation of expression in given context
@@ -93,7 +96,7 @@ function Evaluation(expression, context) {
     expression = expression.trim();
 
     // Check 3 argument operator
-    parts = expression.match(new RegExp(REGEXP.THREE_ARG));
+    parts = this._match3ArgOp(expression);
     if(parts != null) {
       return this._digest(parts[1]) ? this._digest(parts[2]) : this._digest(parts[3]);
     }
@@ -211,6 +214,12 @@ function Evaluation(expression, context) {
       return typeof parts[2];
     }
 
+    // Check paranthesis
+    parts = expression.match(new RegExp(REGEXP.PARANTHESIS));
+    if(parts != null) {
+      return this._digest(parts[1]);
+    }
+
     // Check accessor
     parts = expression.match(new RegExp(REGEXP.ACCESSOR));
     if(parts != null) {
@@ -273,7 +282,7 @@ function Evaluation(expression, context) {
 
     // Check allowed global objects
     if(ALLOWED_GLOBAL_OBJECTS.indexOf(expression) > -1) {
-      return global[expression];
+      return commonjsGlobal[expression];
     }
 
     // Return
@@ -303,10 +312,90 @@ function Evaluation(expression, context) {
   this._match2ArgOp = function _match2ArgOp(op, expression, digestRightSide = true) {
     var parts = expression.match(new RegExp(get2ArgOpRegex(op)));
     if(parts != null) {
+      if(this._hasLostParanthesis(parts[1]) || this._hasLostParanthesis(parts[3])) {
+        return null;
+      }
+
       parts[1] = this._digest(parts[1]);
       parts[3] = digestRightSide ? this._digest(parts[3]) : parts[3];
     }
     return parts;
+  };
+
+  /**
+   * Match 3 argument operator
+   * @param {String} expression
+   * @returns {Array|null}
+   */
+  this._match3ArgOp = function _match3ArgOp(expression) {
+    if(typeof expression !== 'string' || !new RegExp(REGEXP.THREE_ARG).test(expression)) {
+      return null;
+    }
+
+    var char;
+    var state = 0;
+    var parts = [{
+      match: '',
+      paranthesis: 0
+    }, {
+      match: '',
+      paranthesis: 0
+    }, {
+      match: '',
+      paranthesis: 0
+    }];
+
+    for(let i = 0; i &lt; expression.length; i++) {
+      char = expression[i];
+
+      if(searchFor3ArgOp[state] != null &amp;&amp; char === searchFor3ArgOp[state] &amp;&amp; parts[state].paranthesis === 0) {
+        state++;
+      } else {
+        if(char === '(') {
+          parts[state].paranthesis++;
+        } else if(char === ')') {
+          parts[state].paranthesis--;
+        }
+
+        parts[state].match += char;
+      }
+    }
+
+    if(!parts[0].paranthesis &amp;&amp; !parts[1].paranthesis &amp;&amp; !parts[2].paranthesis) {
+      let ret = [expression];
+
+      for(let i = 0; i &lt; 3; i++) {
+        ret.push( this._stripParanthesis(parts[i].match) );
+      }
+
+      return ret;
+    } else {
+      return null;
+    }
+  };
+
+  /**
+   * Returns if given string has lost paranthesis
+   * @param {String} str String to check
+   * @returns {Boolean}
+   */
+  this._hasLostParanthesis = function _detectLostParanthesis(str) {
+    var opening = str.match(/\(/g);
+    opening = opening == null ? 0 : opening.length;
+
+    var closing = str.match(/\)/g);
+    closing = closing == null ? 0 : closing.length;
+
+    return opening !== closing;
+  };
+
+  /**
+   * Strip paranthesis
+   * @param {String} str String that should stripped from border paranthesis
+   */
+  this._stripParanthesis = function _stripParanthesis(str) {
+    var match = str.match(/^\s*\(\s*(.+)\s*\)\s*$/);
+    return match == null ? str : match[1];
   };
 }
 

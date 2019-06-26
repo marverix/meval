@@ -408,6 +408,11 @@ describe('meval', function() {
       var ret = meval('2.5 - item.b / item.a > item.a + item.b * 5', testContext);
       expect(ret).to.be.false;
     });
+
+    it('Should return 7.5', function() {
+      var ret = meval('(item.a + item.b) * (item.b / item.a)', testContext);
+      expect(ret).to.be.eq(7.5);
+    });
   });
 
   describe('Test 3 argument operator', function() {
@@ -420,17 +425,45 @@ describe('meval', function() {
       var ret = meval('item.a * item.b > 10 ? "Wieksze" : "Mniejsze"', testContext);
       expect(ret).to.be.eq('Mniejsze');
     });
-  });
 
-  describe('Test paranthesis', function() {
-    it('Should return 7.5', function() {
-      var ret = meval('(item.a + item.b) * (item.b / item.a)', testContext);
-      expect(ret).to.be.eq(7.5);
+    it('Should return 111', function() {
+      var ret = meval('(true ? true : false) ? 111 : 222', testContext);
+      expect(ret).to.be.eq(111);
     });
 
-    it('Should return "abba"', function() {
-      var ret = meval('(1 + 1) * 2 === 4 ? ( condition ? "ab" + "ba" : 222) : 111', testContext);
-      expect(ret).to.be.eq('abba');
+    it('Should return 222', function() {
+      var ret = meval('(false ? true : false) ? 111 : 222', testContext);
+      expect(ret).to.be.eq(222);
+    });
+
+    it('Should return 111', function() {
+      var ret = meval('true ? (true ? 111 : 222) : 333', testContext);
+      expect(ret).to.be.eq(111);
+    });
+
+    it('Should return 222', function() {
+      var ret = meval('true ? (false ? 111 : 222) : 333', testContext);
+      expect(ret).to.be.eq(222);
+    });
+
+    it('Should return 333', function() {
+      var ret = meval('false ? (true ? 111 : 222) : 333', testContext);
+      expect(ret).to.be.eq(333);
+    });
+
+    it('Should return 111', function() {
+      var ret = meval('true ? 111 : (true ? 222 : 333)', testContext);
+      expect(ret).to.be.eq(111);
+    });
+
+    it('Should return 222', function() {
+      var ret = meval('false ? 111 : (true ? 222 : 333)', testContext);
+      expect(ret).to.be.eq(222);
+    });
+
+    it('Should return 333', function() {
+      var ret = meval('false ? 111 : (false ? 222 : 333)', testContext);
+      expect(ret).to.be.eq(333);
     });
   });
 
