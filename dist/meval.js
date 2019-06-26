@@ -1,4 +1,4 @@
-/* meval v0.5.2 | Copyright 2019 (c) Marek Sierociński| https://github.com/marverix/meval/blob/master/LICENSE */
+/* meval v0.6.0 | Copyright 2019 (c) Marek Sierociński| https://github.com/marverix/meval/blob/master/LICENSE */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -23,7 +23,8 @@
   REGEXP.NAME = '[A-Za-z$_][A-Za-z0-9$_.]*';
   REGEXP.METHOD = "(".concat(REGEXP.NAME, ")\\((.*)\\)");
   REGEXP.PART = "".concat(REGEXP.NAME, "(?:\\(.*\\))?");
-  REGEXP.THREE_ARG = '^(.+)\\?(.+):(.+)$';
+  REGEXP.PARANTHESIS = '^\\(([^)]+)\\)';
+  REGEXP.THREE_ARG = '^(.+?)\\?(.+):(.+)$';
   REGEXP.ACCESSOR = "(".concat(REGEXP.PART, ")\\.(").concat(REGEXP.PART, ")");
   REGEXP.STRING = '(["\\\'])([^"]*)\\1';
   REGEXP.FLOAT = '[0-9]+\\.[0-9]+';
@@ -97,7 +98,7 @@
 
       parts = expression.match(new RegExp(Constants_1.THREE_ARG));
 
-      if (parts != null) {
+      if (parts != null && !this._hasLostParanthesis(parts[1]) && !this._hasLostParanthesis(parts[2]) && !this._hasLostParanthesis(parts[3])) {
         return this._digest(parts[1]) ? this._digest(parts[2]) : this._digest(parts[3]);
       } // Check 2 argument operators
       // ||
@@ -228,6 +229,13 @@
 
       if (parts != null) {
         return _typeof(parts[2]);
+      } // Check paranthesis
+
+
+      parts = expression.match(new RegExp(Constants_1.PARANTHESIS));
+
+      if (parts != null) {
+        return this._digest(parts[1]);
       } // Check accessor
 
 
@@ -319,6 +327,10 @@
       var parts = expression.match(new RegExp(Constants_3(op)));
 
       if (parts != null) {
+        if (this._hasLostParanthesis(parts[2])) {
+          return null;
+        }
+
         parts[2] = this._digest(parts[2]);
       }
 
@@ -337,11 +349,29 @@
       var parts = expression.match(new RegExp(Constants_4(op)));
 
       if (parts != null) {
+        if (this._hasLostParanthesis(parts[1]) || this._hasLostParanthesis(parts[3])) {
+          return null;
+        }
+
         parts[1] = this._digest(parts[1]);
         parts[3] = digestRightSide ? this._digest(parts[3]) : parts[3];
       }
 
       return parts;
+    };
+    /**
+     * Returns if given string has lost paranthesis
+     * @param {String} str String to check
+     * @returns {Boolean}
+     */
+
+
+    this._hasLostParanthesis = function _detectLostParanthesis(str) {
+      var opening = str.match(/\(/g);
+      opening = opening == null ? 0 : opening.length;
+      var closing = str.match(/\)/g);
+      closing = closing == null ? 0 : closing.length;
+      return opening !== closing;
     };
   }
 

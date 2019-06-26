@@ -18,15 +18,16 @@ It always returns the value of given expression. You always need to provide cont
 * three argument operator: `?:`
 * Strings, Numbers (both Integers and Floats) and Booleans
 * global properties: `undefined`, `null`, `NaN` and `Infinity`
-* using accessors
+* using `.` accessor
 * calling methods
 * accessing allowed global Objects such as `Date`, `Math`, `Number`, `String`, `Array` and `Object`
+* paranthesis
 * simple mixing above
 
 ### TODO
 
 * support single argument operators: `new`, `-`, `+`
-* support both `[]` and `()`
+* support `[]` accessor
 * support nested methods (e.g. `Math.min(1, Math.max(item.a, item.b))`)
 * maybe validating proper JS syntax?
 

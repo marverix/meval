@@ -422,6 +422,18 @@ describe('meval', function() {
     });
   });
 
+  describe('Test paranthesis', function() {
+    it('Should return 7.5', function() {
+      var ret = meval('(item.a + item.b) * (item.b / item.a)', testContext);
+      expect(ret).to.be.eq(7.5);
+    });
+
+    it('Should return "abba"', function() {
+      var ret = meval('(1 + 1) * 2 === 4 ? ( condition ? "ab" + "ba" : 222) : 111', testContext);
+      expect(ret).to.be.eq('abba');
+    });
+  });
+
   describe('Test calling methods', function() {
     it('Should return "HELLO WORLD"', function() {
       var ret = meval('str.toUpperCase()', testContext);

@@ -41,7 +41,8 @@ function Evaluation(expression, context) {
 
     // Check 3 argument operator
     parts = expression.match(new RegExp(REGEXP.THREE_ARG));
-    if(parts != null) {
+    if(parts != null &&
+      !this._hasLostParanthesis(parts[1]) && !this._hasLostParanthesis(parts[2]) && !this._hasLostParanthesis(parts[3])) {
       return this._digest(parts[1]) ? this._digest(parts[2]) : this._digest(parts[3]);
     }
 
@@ -158,6 +159,12 @@ function Evaluation(expression, context) {
       return typeof parts[2];
     }
 
+    // Check paranthesis
+    parts = expression.match(new RegExp(REGEXP.PARANTHESIS));
+    if(parts != null) {
+      return this._digest(parts[1]);
+    }
+
     // Check accessor
     parts = expression.match(new RegExp(REGEXP.ACCESSOR));
     if(parts != null) {
@@ -236,6 +243,10 @@ function Evaluation(expression, context) {
   this._match1ArgOp = function _match1ArgOp(op, expression) {
     var parts = expression.match(new RegExp(get1ArgOpRegex(op)));
     if(parts != null) {
+      if(this._hasLostParanthesis(parts[2])) {
+        return null;
+      }
+
       parts[2] = this._digest(parts[2]);
     }
     return parts;
@@ -250,10 +261,29 @@ function Evaluation(expression, context) {
   this._match2ArgOp = function _match2ArgOp(op, expression, digestRightSide = true) {
     var parts = expression.match(new RegExp(get2ArgOpRegex(op)));
     if(parts != null) {
+      if(this._hasLostParanthesis(parts[1]) || this._hasLostParanthesis(parts[3])) {
+        return null;
+      }
+
       parts[1] = this._digest(parts[1]);
       parts[3] = digestRightSide ? this._digest(parts[3]) : parts[3];
     }
     return parts;
+  };
+
+  /**
+   * Returns if given string has lost paranthesis
+   * @param {String} str String to check
+   * @returns {Boolean}
+   */
+  this._hasLostParanthesis = function _detectLostParanthesis(str) {
+    var opening = str.match(/\(/g);
+    opening = opening == null ? 0 : opening.length;
+
+    var closing = str.match(/\)/g);
+    closing = closing == null ? 0 : closing.length;
+
+    return opening !== closing;
   };
 }
 
