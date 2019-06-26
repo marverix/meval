@@ -1,4 +1,4 @@
-/* meval v0.1.0 | Copyright 2019 (c) Marek Sierociński| https://github.com/marverix/meval/blob/master/LICENSE */
+/* meval v0.2.0 | Copyright 2019 (c) Marek Sierociński| https://github.com/marverix/meval/blob/master/LICENSE */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -14,6 +14,7 @@
   REGEXP.STRING = '(["\\\'])([^"]*)\\1';
   REGEXP.FLOAT = '[0-9]+\\.[0-9]+';
   REGEXP.INTEGER = '[0-9]+';
+  REGEXP.BOOLEAN = 'true|false';
   var ALLOWED_GLOBAL_OBJECTS = ['String', 'Number', 'Array', 'Object', 'Date', 'Math'];
   /**
    * Get regexp string for 2 argument operator
@@ -199,6 +200,13 @@
 
           return leftSide[parts[1]].apply(leftSide, args);
         }
+      } // Check boolean
+
+
+      parts = expression.match(new RegExp(Constants_1.BOOLEAN));
+
+      if (parts != null) {
+        return parts[0] == 'true';
       } // Check string
 
 

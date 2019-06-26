@@ -28,7 +28,7 @@
             <h1><a href="index.html" class="link">meval</a></h1>
             <span class="version">
             
-                v0.1.0
+                v0.2.0
             
             </span>
         </div>
@@ -64,7 +64,9 @@
 
 
 <article class="readme"><h1>meval - m(imic) eval</h1>
-<p><a href="LICENSE"><img src="https://img.shields.io/badge/License-ISC-blue.svg" alt="License: ISC"></a></p>
+<p><a href="https://travis-ci.com/marverix/meval"><img src="https://img.shields.io/travis/com/marverix/meval/master.svg" alt="Build Status"></a>
+<a href="releases"><img src="https://img.shields.io/github/release/marverix/meval.svg" alt="Current Release"></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/License-ISC-blue.svg" alt="License: ISC"></a></p>
 <h2>Info</h2>
 <p>This is <em>not</em> a &quot;safe JavaScript eval&quot;. This is small library that only mimics <code>eval()</code> functionality to some point.
 It always returns the value of given expression. You always need to provide context in which it will be executed
@@ -74,7 +76,7 @@ It always returns the value of given expression. You always need to provide cont
 <li>simple one-line expressions</li>
 <li>all two argument operators: <code>*</code>, <code>/</code>, <code>%</code>, <code>+</code>, <code>-</code>, <code>&gt;=</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&lt;</code>, <code>===</code>, <code>!==</code>, <code>==</code>, <code>!=</code>, <code>&amp;&amp;</code> and <code>||</code></li>
 <li>three argument operator: <code>?:</code></li>
-<li>Strings, Numbers (both Integers and Floats)</li>
+<li>Strings, Numbers (both Integers and Floats) and Booleans</li>
 <li>using accessors</li>
 <li>calling methods</li>
 <li>accessing allowed global Objects such as <code>Date</code>, <code>Math</code>, <code>Number</code>, <code>String</code>, <code>Array</code> and <code>Object</code></li>

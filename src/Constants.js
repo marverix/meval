@@ -7,6 +7,7 @@ REGEXP.ACCESSOR = `(${REGEXP.PART})\\.(${REGEXP.PART})`;
 REGEXP.STRING = '(["\\\'])([^"]*)\\1';
 REGEXP.FLOAT = '[0-9]+\\.[0-9]+';
 REGEXP.INTEGER = '[0-9]+';
+REGEXP.BOOLEAN = 'true|false';
 
 const ALLOWED_GLOBAL_OBJECTS = ['String', 'Number', 'Array', 'Object', 'Date', 'Math'];
 

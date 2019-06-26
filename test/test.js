@@ -39,6 +39,37 @@ describe('meval', function() {
     });
   });
 
+  describe('Test strings', function() {
+    it('Should return "Test"', function() {
+      var ret = meval('"Test"', testContext);
+      expect(ret).to.be.eq('Test');
+    });
+  });
+
+  describe('Test numbers', function() {
+    it('Should return 123', function() {
+      var ret = meval('123', testContext);
+      expect(ret).to.be.eq(123);
+    });
+
+    it('Should return 1.23', function() {
+      var ret = meval('1.23', testContext);
+      expect(ret).to.be.eq(1.23);
+    });
+  });
+
+  describe('Test booleans', function() {
+    it('Should return true', function() {
+      var ret = meval('true', testContext);
+      expect(ret).to.be.true;
+    });
+
+    it('Should return false', function() {
+      var ret = meval('false', testContext);
+      expect(ret).to.be.false;
+    });
+  });
+
   describe('Test using method', function() {
     it('Should return "HELLO WORLD"', function() {
       var ret = meval('str.toUpperCase()', testContext);

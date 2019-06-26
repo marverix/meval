@@ -15,7 +15,7 @@ It always returns the value of given expression. You always need to provide cont
 * simple one-line expressions
 * all two argument operators: `*`, `/`, `%`, `+`, `-`, `>=`, `<=`, `>`, `<`, `===`, `!==`, `==`, `!=`, `&&` and `||`
 * three argument operator: `?:`
-* Strings, Numbers (both Integers and Floats)
+* Strings, Numbers (both Integers and Floats) and Booleans
 * using accessors
 * calling methods
 * accessing allowed global Objects such as `Date`, `Math`, `Number`, `String`, `Array` and `Object`

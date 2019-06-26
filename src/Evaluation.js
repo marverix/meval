@@ -149,6 +149,12 @@ function Evaluation(expression, context) {
       }
     }
 
+    // Check boolean
+    parts = expression.match(new RegExp(REGEXP.BOOLEAN));
+    if(parts != null) {
+      return parts[0] == 'true';
+    }
+
     // Check string
     parts = expression.match(new RegExp(REGEXP.STRING));
     if(parts != null) {

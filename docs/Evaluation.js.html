@@ -29,7 +29,7 @@
             <h1><a href="index.html" class="link">meval</a></h1>
             <span class="version">
             
-                v0.1.0
+                v0.2.0
             
             </span>
         </div>
@@ -202,6 +202,12 @@ function Evaluation(expression, context) {
         }
         return leftSide[parts[1]].apply(leftSide, args);
       }
+    }
+
+    // Check boolean
+    parts = expression.match(new RegExp(REGEXP.BOOLEAN));
+    if(parts != null) {
+      return parts[0] == 'true';
     }
 
     // Check string
