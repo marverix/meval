@@ -5,6 +5,8 @@ import {
   get2ArgOpRegex
 } from './Constants';
 
+const commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
 /**
  * Evaluation of expression in given context
  *
@@ -218,7 +220,7 @@ function Evaluation(expression, context) {
 
     // Check allowed global objects
     if(ALLOWED_GLOBAL_OBJECTS.indexOf(expression) > -1) {
-      return global[expression];
+      return commonjsGlobal[expression];
     }
 
     // Return

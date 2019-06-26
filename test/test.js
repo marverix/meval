@@ -1,7 +1,7 @@
 // Prepare chai
 const chai = require('chai');
 const expect = chai.expect;
-const meval = require('../dist/meval');
+const meval = require('../dist/meval.min');
 
 describe('meval', function() {
 

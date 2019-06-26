@@ -1,4 +1,4 @@
-/* meval v0.5.1 | Copyright 2019 (c) Marek Sierociński| https://github.com/marverix/meval/blob/master/LICENSE */
+/* meval v0.5.2 | Copyright 2019 (c) Marek Sierociński| https://github.com/marverix/meval/blob/master/LICENSE */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -60,6 +60,7 @@
   var Constants_3 = Constants.get1ArgOpRegex;
   var Constants_4 = Constants.get2ArgOpRegex;
 
+  var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
   /**
    * Evaluation of expression in given context
    *
@@ -300,7 +301,7 @@
 
 
       if (Constants_2.indexOf(expression) > -1) {
-        return global[expression];
+        return commonjsGlobal[expression];
       } // Return
 
 
