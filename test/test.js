@@ -70,6 +70,28 @@ describe('meval', function() {
     });
   });
 
+  describe('Test global properties', function() {
+    it('Should return undefined', function() {
+      var ret = meval('undefined', testContext);
+      expect(ret).to.be.an.undefined;
+    });
+
+    it('Should return null', function() {
+      var ret = meval('null', testContext);
+      expect(ret).to.be.an.null;
+    });
+
+    it('Should return NaN', function() {
+      var ret = meval('NaN', testContext);
+      expect(ret).to.be.a.NaN;
+    });
+
+    it('Should return Infinity', function() {
+      var ret = meval('Infinity', testContext);
+      expect(ret).to.be.eq(Infinity);
+    });
+  });
+
   describe('Test using method', function() {
     it('Should return "HELLO WORLD"', function() {
       var ret = meval('str.toUpperCase()', testContext);
@@ -100,6 +122,16 @@ describe('meval', function() {
   });
 
   describe('Test 1 argument operator: typeof', function() {
+    it('Should return "undefined"', function() {
+      var ret = meval('typeof item.x', testContext);
+      expect(ret).to.be.eq('undefined');
+    });
+
+    it('Should return "undefined"', function() {
+      var ret = meval('typeof undefined', testContext);
+      expect(ret).to.be.eq('undefined');
+    });
+
     it('Should return "string"', function() {
       var ret = meval('typeof str', testContext);
       expect(ret).to.be.eq('string');
@@ -120,6 +152,16 @@ describe('meval', function() {
       expect(ret).to.be.eq('number');
     });
 
+    it('Should return "number"', function() {
+      var ret = meval('typeof NaN', testContext);
+      expect(ret).to.be.eq('number');
+    });
+
+    it('Should return "number"', function() {
+      var ret = meval('typeof Infinity', testContext);
+      expect(ret).to.be.eq('number');
+    });
+
     it('Should return "boolean"', function() {
       var ret = meval('typeof condition', testContext);
       expect(ret).to.be.eq('boolean');
@@ -128,6 +170,16 @@ describe('meval', function() {
     it('Should return "boolean"', function() {
       var ret = meval('typeof true', testContext);
       expect(ret).to.be.eq('boolean');
+    });
+
+    it('Should return "object"', function() {
+      var ret = meval('typeof item.deep', testContext);
+      expect(ret).to.be.eq('object');
+    });
+
+    it('Should return "object"', function() {
+      var ret = meval('typeof null', testContext);
+      expect(ret).to.be.eq('object');
     });
   });
 

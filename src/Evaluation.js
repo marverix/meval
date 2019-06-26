@@ -167,6 +167,24 @@ function Evaluation(expression, context) {
       }
     }
 
+    // Check global properties
+    parts = expression.match(new RegExp(REGEXP.GLOBAL_PROPERTIES));
+    if(parts != null) {
+      switch(parts[0]) {
+      case 'null':
+        return null;
+
+      case 'NaN':
+        return NaN;
+
+      case 'Infinity':
+        return Infinity;
+
+      default:
+        return undefined;
+      }
+    }
+
     // Check boolean
     parts = expression.match(new RegExp(REGEXP.BOOLEAN));
     if(parts != null) {

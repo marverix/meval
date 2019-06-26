@@ -8,6 +8,7 @@ REGEXP.STRING = '(["\\\'])([^"]*)\\1';
 REGEXP.FLOAT = '[0-9]+\\.[0-9]+';
 REGEXP.INTEGER = '[0-9]+';
 REGEXP.BOOLEAN = 'true|false';
+REGEXP.GLOBAL_PROPERTIES = 'undefined|null|NaN|Infinity';
 
 const ALLOWED_GLOBAL_OBJECTS = ['String', 'Number', 'Array', 'Object', 'Date', 'Math'];
 
