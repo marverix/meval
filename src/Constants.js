@@ -11,7 +11,10 @@ REGEXP.INTEGER = '[0-9]+';
 REGEXP.BOOLEAN = 'true|false';
 REGEXP.GLOBAL_PROPERTIES = 'undefined|null|NaN|Infinity';
 
-const ALLOWED_GLOBAL_OBJECTS = ['String', 'Number', 'Array', 'Object', 'Date', 'Math'];
+const ALLOWED_GLOBAL_OBJECTS = [
+  'String', 'Number', 'Array', 'Object', 'Date', 'Math',
+  'location', 'navigator'
+];
 
 /**
  * Get regexp string for 1 argument operator

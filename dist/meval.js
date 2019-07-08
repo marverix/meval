@@ -1,4 +1,4 @@
-/* meval v0.6.1 | Copyright 2019 (c) Marek Sierociński| https://github.com/marverix/meval/blob/master/LICENSE */
+/* meval v0.6.2 | Copyright 2019 (c) Marek Sierociński| https://github.com/marverix/meval/blob/master/LICENSE */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -31,7 +31,7 @@
   REGEXP.INTEGER = '[0-9]+';
   REGEXP.BOOLEAN = 'true|false';
   REGEXP.GLOBAL_PROPERTIES = 'undefined|null|NaN|Infinity';
-  var ALLOWED_GLOBAL_OBJECTS = ['String', 'Number', 'Array', 'Object', 'Date', 'Math'];
+  var ALLOWED_GLOBAL_OBJECTS = ['String', 'Number', 'Array', 'Object', 'Date', 'Math', 'location', 'navigator'];
   /**
    * Get regexp string for 1 argument operator
    * @param {String} op Operator
