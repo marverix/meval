@@ -6,30 +6,60 @@
 
 ## Info
 
-This is *not* a "safe JavaScript eval". This is small library that only mimics `eval()` functionality to some point.
-It always returns the value of given expression. You always need to provide context in which it will be executed 
-(context *must be* an Object).
+This is **not** a "safe JavaScript eval". This library only mimics `eval()` functionality to some point.
+It always returns the value of given expression. You always need to provide context in which it will be executed (context **must be** an Object).
+
+Pure JavaScript! No dependencies! ^^,
 
 ### What's working
 
-* simple one-line expressions
-* single argument operator: `!`, `typeof`
-* all two argument operators: `*`, `/`, `%`, `+`, `-`, `>=`, `<=`, `>`, `<`, `===`, `!==`, `==`, `!=`, `&&` and `||`
-* three argument operator: `?:`
+* one-argument operators:
+  * `! ...`
+  * `~ ...`
+  * `+ ...`
+  * `- ...`
+  * `typeof ...`
+* two-argument operators:
+  * `... . ...` (member accessor)
+  * `... * ...`
+  * `... / ...`
+  * `... % ...`
+  * `... + ...`
+  * `... - ...`
+  * `... >= ...`
+  * `... <= ...`
+  * `... > ...`
+  * `... < ...`
+  * `... instanceof ...`
+  * `... in ...`
+  * `... === ...`
+  * `... !== ...`
+  * `... == ...`
+  * `... != ...`
+  * `... && ...`
+  * `... || ...`
+  * `... & ...`
+  * `... | ...`
+  * `... ^ ...`
+* three-argument operator:
+  * `... ? ... : ...`
 * Strings, Numbers (both Integers and Floats) and Booleans
-* global properties: `undefined`, `null`, `NaN` and `Infinity`
-* using `.` accessor
+  * Node: Interpolation in Strings is not planned for now to be implemented
+* properties:
+  * `undefined`
+  * `null`
+  * `NaN`
+  * `Infinity`
+* grouping (paranthesis)
 * calling methods
-* accessing allowed global Objects such as `Date`, `Math`, `Number`, `String`, `Array` and `Object`
-* paranthesis
-* simple mixing above
+  * support nested methods (e.g. `foo(1, bar(item.a, item.b))`)
+* mixing above
 
 ### TODO
 
-* support single argument operators: `new`, `-`, `+`
-* support `[]` accessor
-* support nested methods (e.g. `Math.min(1, Math.max(item.a, item.b))`)
-* maybe validating proper JS syntax?
+* one-argument operators:
+  * `new` (I don't know if it's good idea?)
+* accessing allowed global Objects such as `Date`, `Math`, `Number`, `String`, `Array` and `Object`
 
 ## Usage
 

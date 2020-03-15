@@ -11,6 +11,6 @@
     "url": "git@github.com:marverix/meval.git"
   },
   "ignore": [
-    "src", "test"
+    "src", "test", "docs"
   ]
 }

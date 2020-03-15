@@ -1,347 +1,310 @@
-import {
-  REGEXP,
-  ALLOWED_GLOBAL_OBJECTS,
-  get1ArgOpRegex,
-  get2ArgOpRegex
-} from './Constants';
+'use strict';
 
-const commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-const searchFor3ArgOp = ['?', ':', null];
+const consumers = require('./consumers');
+const operators = require('./operators');
 
-/**
- * Evaluation of expression in given context
- *
- * @param {String} expression
- * @param {Object} context
- */
-function Evaluation(expression, context) {
-  if(typeof expression !== 'string') {
-    throw new TypeError('Expressions must be a string');
+const TakeResponseEnum = require('./common/TakeResponseEnum');
+
+const whiteChar = /\s/;
+const groupOpening = /\(/;
+const groupClosing = /\)/;
+const nextArgument = /,/;
+
+
+class AbstractEvaluation {
+
+  constructor () {
+    this.entities = [];
+    this.currentEntity = null;
   }
 
-  this.expression = expression;
-  this.context = context;
+  /**
+   * Run Evaluation
+   */
+  run () {
+    this.readExpression();
+    return this.execute();
+  }
 
   /**
-   * Run
-   * Start digesting expression
+   * Parse Expression
+   * This is the first step. It will read expression and extract entities, which will be executed.
+   * Reading also should validate syntax.
    */
-  this.run = function run() {
-    this.current = [];
-    return this._digest(this.expression);
-  };
+  readExpression () {
+    var char, response, Entity;
 
-  /**
-   * Digest given expression
-   * @param {String} expression
-   * @private
-   */
-  this._digest = function _digest(expression) {
-    var parts;
-    expression = expression.trim();
+    for(this.idx; this.idx < this.expression.length; this.idx++) {
+      char = this.expression[this.idx];
 
-    // Check 3 argument operator
-    parts = this._match3ArgOp(expression);
-    if(parts != null) {
-      return this._digest(parts[1]) ? this._digest(parts[2]) : this._digest(parts[3]);
-    }
+      // check if there is an entity
+      if (this.currentEntity == null) {
 
-    // Check 2 argument operators
-
-    // ||
-    parts = this._match2ArgOp('\\|\\|', expression, false);
-    if(parts != null) {
-      if(parts[1]) {
-        return parts[1];
-      } else {
-        return this._digest(parts[3]);
-      }
-    }
-
-    // &&
-    parts = this._match2ArgOp('&&', expression, false);
-    if(parts != null) {
-      if(parts[1]) {
-        return this._digest(parts[3]);
-      }
-      return false;
-    }
-
-    // !==
-    parts = this._match2ArgOp('!==', expression);
-    if(parts != null) {
-      return parts[1] !== parts[3];
-    }
-
-    // ===
-    parts = this._match2ArgOp('===', expression);
-    if(parts != null) {
-      return parts[1] === parts[3];
-    }
-
-    // !=
-    parts = this._match2ArgOp('!=', expression);
-    if(parts != null) {
-      return parts[1] != parts[3];
-    }
-
-    // ==
-    parts = this._match2ArgOp('==', expression);
-    if(parts != null) {
-      return parts[1] == parts[3];
-    }
-
-    // <=
-    parts = this._match2ArgOp('<=', expression);
-    if(parts != null) {
-      return parts[1] <= parts[3];
-    }
-
-    // >=
-    parts = this._match2ArgOp('>=', expression);
-    if(parts != null) {
-      return parts[1] >= parts[3];
-    }
-
-    // <
-    parts = this._match2ArgOp('<', expression);
-    if(parts != null) {
-      return parts[1] < parts[3];
-    }
-
-    // >
-    parts = this._match2ArgOp('>', expression);
-    if(parts != null) {
-      return parts[1] > parts[3];
-    }
-
-    // -
-    parts = this._match2ArgOp('-', expression);
-    if(parts != null) {
-      return parts[1] - parts[3];
-    }
-
-    // +
-    parts = this._match2ArgOp('\\+', expression);
-    if(parts != null) {
-      return parts[1] + parts[3];
-    }
-
-    // %
-    parts = this._match2ArgOp('%', expression);
-    if(parts != null) {
-      return parts[1] % parts[3];
-    }
-
-    // /
-    parts = this._match2ArgOp('\\/', expression);
-    if(parts != null) {
-      return parts[1] / parts[3];
-    }
-
-    // *
-    parts = this._match2ArgOp('\\*', expression);
-    if(parts != null) {
-      return parts[1] * parts[3];
-    }
-
-    // Check 1 argument operators
-
-    // !
-    parts = this._match1ArgOp('!', expression);
-    if(parts != null) {
-      return !parts[2];
-    }
-
-    // typeof
-    parts = this._match1ArgOp('typeof', expression);
-    if(parts != null) {
-      return typeof parts[2];
-    }
-
-    // Check paranthesis
-    parts = expression.match(new RegExp(REGEXP.PARANTHESIS));
-    if(parts != null) {
-      return this._digest(parts[1]);
-    }
-
-    // Check accessor
-    parts = expression.match(new RegExp(REGEXP.ACCESSOR));
-    if(parts != null) {
-      let leftSide = this._digest(parts[1]);
-      let rightSide = parts[2];
-
-      parts = rightSide.match(new RegExp(REGEXP.METHOD));
-      if(parts == null) {
-        return leftSide[rightSide];
-      } else {
-        let args = parts[2].split(',');
-        for(let i = 0; i < args.length; i++) {
-          args[i] = this._digest(args[i]);
-        }
-        return leftSide[parts[1]].apply(leftSide, args);
-      }
-    }
-
-    // Check global properties
-    parts = expression.match(new RegExp(REGEXP.GLOBAL_PROPERTIES));
-    if(parts != null) {
-      switch(parts[0]) {
-      case 'null':
-        return null;
-
-      case 'NaN':
-        return NaN;
-
-      case 'Infinity':
-        return Infinity;
-
-      default:
-        return undefined;
-      }
-    }
-
-    // Check boolean
-    parts = expression.match(new RegExp(REGEXP.BOOLEAN));
-    if(parts != null) {
-      return parts[0] == 'true';
-    }
-
-    // Check string
-    parts = expression.match(new RegExp(REGEXP.STRING));
-    if(parts != null) {
-      return parts[2];
-    }
-
-    // Check float
-    parts = expression.match(new RegExp(REGEXP.FLOAT));
-    if(parts != null) {
-      return parseFloat(parts[0]);
-    }
-
-    // Check integer
-    parts = expression.match(new RegExp(REGEXP.INTEGER));
-    if(parts != null) {
-      return parseInt(parts[0]);
-    }
-
-    // Check allowed global objects
-    if(ALLOWED_GLOBAL_OBJECTS.indexOf(expression) > -1) {
-      return commonjsGlobal[expression];
-    }
-
-    // Return
-    return this.context[expression];
-  };
-
-  /**
-   * Match 1 argument operator
-   * @param {String} op Operator to check
-   * @param {String} expression
-   * @private
-   */
-  this._match1ArgOp = function _match1ArgOp(op, expression) {
-    var parts = expression.match(new RegExp(get1ArgOpRegex(op)));
-    if(parts != null) {
-      parts[2] = this._digest(parts[2]);
-    }
-    return parts;
-  };
-
-  /**
-   * Match 2 argument operator
-   * @param {String} op Operator to check
-   * @param {String} expression
-   * @private
-   */
-  this._match2ArgOp = function _match2ArgOp(op, expression, digestRightSide = true) {
-    var parts = expression.match(new RegExp(get2ArgOpRegex(op)));
-    if(parts != null) {
-      if(this._hasLostParanthesis(parts[1]) || this._hasLostParanthesis(parts[3])) {
-        return null;
-      }
-
-      parts[1] = this._digest(parts[1]);
-      parts[3] = digestRightSide ? this._digest(parts[3]) : parts[3];
-    }
-    return parts;
-  };
-
-  /**
-   * Match 3 argument operator
-   * @param {String} expression
-   * @returns {Array|null}
-   */
-  this._match3ArgOp = function _match3ArgOp(expression) {
-    if(typeof expression !== 'string' || !new RegExp(REGEXP.THREE_ARG).test(expression)) {
-      return null;
-    }
-
-    var char;
-    var state = 0;
-    var parts = [{
-      match: '',
-      paranthesis: 0
-    }, {
-      match: '',
-      paranthesis: 0
-    }, {
-      match: '',
-      paranthesis: 0
-    }];
-
-    for(let i = 0; i < expression.length; i++) {
-      char = expression[i];
-
-      if(searchFor3ArgOp[state] != null && char === searchFor3ArgOp[state] && parts[state].paranthesis === 0) {
-        state++;
-      } else {
-        if(char === '(') {
-          parts[state].paranthesis++;
-        } else if(char === ')') {
-          parts[state].paranthesis--;
+        if (this.shouldFinish(char)) {
+          break;
+        } else if (this.shouldSkip(char)) {
+          continue;
         }
 
-        parts[state].match += char;
+        // if not then find one
+        Entity = this.findEntity();
+
+        if (Entity == null) {
+          throw new Error(`Unexpected char ${char} at index ${this.idx}`);
+        } else {
+          this.currentEntity = new Entity();
+        }
+
       }
+
+      // get response from the entity
+      response = this.currentEntity.take(char);
+
+      if (response === TakeResponseEnum.OK_CONTENTED) {
+        this.resolveEntity();
+      } else if (response === TakeResponseEnum.REJECT) {
+        this.resolveEntity();
+        --this.idx;
+      }
+
     }
 
-    if(!parts[0].paranthesis && !parts[1].paranthesis && !parts[2].paranthesis) {
-      let ret = [expression];
+    if (this.currentEntity != null) {
+      this.resolveEntity();
+    }
 
-      for(let i = 0; i < 3; i++) {
-        ret.push( this._stripParanthesis(parts[i].match) );
+  }
+
+  /**
+   * Execute
+   * This is the second step. Now that we have list of entities and syntax is validated, we can execute it with
+   * proper order.
+   */
+  execute () {
+    while (this.entities.length > 1) {
+      // 1. Get the most important operator
+      let current = {
+        priority: 0,
+        index: -1
+      };
+
+      for (let i = 0; i < this.entities.length; i++) {
+        if (operators.isOperator(this.entities[i])) {
+          let priority = this.entities[i].$priority;
+          if (current.priority < priority) {
+            current.priority = priority;
+            current.index = i;
+          }
+        }
       }
 
-      return ret;
-    } else {
-      return null;
+      // 2. Execute operator
+      this.entities[current.index].execute(this.context, current.index, this.entities);
     }
-  };
+
+    // Lonely cosumer left? Oh, let's take care of you...
+    if (consumers.isConsumer(this.entities[0])) {
+      this.entities[0] = this.entities[0].resolve(this.context);
+    }
+
+    return this.entities[0];
+  }
+
 
   /**
-   * Returns if given string has lost paranthesis
-   * @param {String} str String to check
-   * @returns {Boolean}
+   * Should skip the turn?
+   * @param {string} char
+   * @return {boolean}
    */
-  this._hasLostParanthesis = function _detectLostParanthesis(str) {
-    var opening = str.match(/\(/g);
-    opening = opening == null ? 0 : opening.length;
+  shouldSkip (char) {
+    if (whiteChar.test(char)) {
+      return true;
 
-    var closing = str.match(/\)/g);
-    closing = closing == null ? 0 : closing.length;
+    // evaluate group if it's opening
+    } else if (groupOpening.test(char)) {
+      this.subEvaluate(this.isLastEntityConsumer);
+      return true;
+    }
 
-    return opening !== closing;
-  };
+    return false;
+  }
 
   /**
-   * Strip paranthesis
-   * @param {String} str String that should stripped from border paranthesis
+   * Should finish evaluation?
+   * @param {string} char
+   * @return {boolean}
    */
-  this._stripParanthesis = function _stripParanthesis(str) {
-    var match = str.match(/^\s*\(\s*(.+)\s*\)\s*$/);
-    return match == null ? str : match[1];
-  };
+  // eslint-disable-next-line no-unused-vars
+  shouldFinish (char) {
+    return false;
+  }
+
+  /**
+   * Find an Entity that wants this char
+   * @returns {AbstractEntity|null}
+   */
+  findEntity () {
+    let str = this.expression.substr(this.idx);
+
+    let Entity = operators.find(str, this.isLastEntityConsumer);
+
+    if (Entity == null) {
+      Entity = consumers.find(str);
+    }
+
+    return Entity;
+  }
+
+  /**
+   * Resolve the Entity
+   */
+  resolveEntity () {
+    this.entities.push(this.currentEntity);
+    this.currentEntity = null;
+  }
+
+  /**
+   * Check if last entity is a Consumer
+   */
+  get isLastEntityConsumer () {
+    return this.entities.length > 0 ? !operators.isOperator(this.entities[this.entities.length - 1]) : false;
+  }
+
+  /**
+   * Do some class-based evaluation
+   */
+  subEvaluate (arg = false) {
+    let Sub = arg ? ArgEvaluation : SubEvaluation;
+
+    this.idx++;
+    this.currentEntity = new Sub(this).run();
+    this.resolveEntity();
+  }
+
 }
 
-export default Evaluation;
+
+
+class MainEvaluation extends AbstractEvaluation {
+
+  /**
+   * Evaluation of expression in given context
+   *
+   * @constructor
+   * @param {String} expression
+   * @param {Object} context
+   */
+  constructor (expression, context) {
+    super();
+
+    if (typeof expression !== 'string') {
+      throw new TypeError('expression is not a String');
+    }
+
+    if (typeof context !== 'object' || context === null) {
+      throw new TypeError('context is not an Object');
+    }
+
+    this.expression = expression;
+    this.context = context;
+    this.idx = 0;
+  }
+
+}
+
+
+
+class SubEvaluation extends AbstractEvaluation {
+
+  /**
+   * Evaluation of sub-expression
+   *
+   * @constructor
+   * @param {AbstractEvaluation} parent
+   */
+  constructor (parent) {
+    super();
+    this.parent = parent;
+  }
+
+  /**
+   * Expression Getter
+   */
+  get expression () {
+    return this.parent.expression;
+  }
+
+  /**
+   * Context Getter
+   */
+  get context () {
+    return this.parent.context;
+  }
+
+  /**
+   * Current Index Getter
+   */
+  get idx () {
+    return this.parent.idx;
+  }
+
+  /**
+   * Current Index Setter
+   */
+  set idx (val) {
+    this.parent.idx = val;
+  }
+
+  /**
+   * Should finish evaluation?
+   * @return {boolean}
+   */
+  shouldFinish (char) {
+    if (groupClosing.test(char) || nextArgument.test(char)) {
+      this.idx++;
+      return true;
+    }
+    return false;
+  }
+
+}
+
+
+
+class ArgEvaluation extends SubEvaluation {
+
+  /**
+   * Evaluation of arguments-expression
+   *
+   * @constructor
+   * @param {AbstractEvaluation} parent
+   */
+  constructor (parent) {
+    super(parent);
+  }
+
+  /**
+   * Should skip the turn?
+   * @param {string} char
+   * @return {boolean}
+   */
+  shouldSkip (char) {
+    if (super.shouldSkip(char)) {
+      return true;
+    }
+
+    this.idx--;
+    this.subEvaluate(false);
+    return true;
+  }
+
+  execute () {
+    return new operators.FunctionCall(this.entities);
+  }
+
+}
+
+
+
+
+module.exports = MainEvaluation;

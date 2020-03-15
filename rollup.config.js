@@ -1,62 +1,39 @@
 // Imports
-import commonjs from 'rollup-plugin-commonjs';
-import nodeResolve from 'rollup-plugin-node-resolve';
+import cjs from '@rollup/plugin-commonjs';
+import resolve from '@rollup/plugin-node-resolve';
 import babel from 'rollup-plugin-babel';
 import { uglify } from 'rollup-plugin-uglify';
 
 import $package from './package.json';
 
-var externals = Object.keys($package.dependencies || []);
-var globals = {};
+const input = 'src/index.js';
+const external = Object.keys($package.dependencies || []);
+const globals = {};
 
-for(let ext of externals) {
+for(let ext of external) {
   globals[ext] = ext;
 }
 
-// Common
-var config = {
-  input: 'src/index.js',
-
-  output: {
-    file: 'dist/meval',
-    format: 'umd',
-    name: 'meval',
-    banner: `/* meval v${$package.version} ` +
-      `| Copyright ${new Date().getFullYear()} (c) Marek Sierociński` +
-      '| https://github.com/marverix/meval/blob/master/LICENSE ' +
-      '*/',
-    globals: globals
-  },
-
-  extensions: ['.js'],
-  external: externals
-};
-
-var input = config.input;
-
 var output = function(min) {
   return {
-    file: config.output.file + (min ? '.min' : '') + '.js',
-    format: config.output.format,
-    name:  config.output.name,
-    banner: config.output.banner,
-    globals: config.output.globals
+    file: 'dist/meval' + (min ? '.min' : '') + '.js',
+    format: 'umd',
+    name:  'meval',
+    banner: `/* meval v${$package.version} ` +
+    `| Copyright ${new Date().getFullYear()} (c) Marek Sierociński` +
+    '| https://github.com/marverix/meval/blob/master/LICENSE ' +
+    '*/',
+    globals
   };
 };
 
 var plugins = [
-  nodeResolve({
-    extensions: config.extensions
-  }),
-  commonjs({
-    extensions: config.extensions
-  }),
+  cjs(),
+  resolve(),
   babel({
     exclude: 'node_modules/**'
   })
 ];
-
-var external = config.external;
 
 // Export
 export default [

@@ -3,9 +3,11 @@
         "browser": true,
         "commonjs": true,
         "shared-node-browser": true,
-        "amd": true,
         "mocha": true,
         "es6": true
+    },
+    "globals": {
+      "globalThis": true
     },
     "extends": "eslint:recommended",
     "parserOptions": {

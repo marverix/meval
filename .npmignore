@@ -9,9 +9,6 @@ jsdoc.json
 test/
 coverage/
 
-# Source files
-src/
-
 # Configs
 .babelrc
 rollup.config.js
