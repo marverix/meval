@@ -1,6 +1,9 @@
 # Static files for README
 _static/
 
+# Source
+src/
+
 # Documentation
 docs/
 jsdoc.json
