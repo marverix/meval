@@ -1,8 +1,9 @@
+
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Home | meval</title>
+    <title>Source: consumers/index.js | meval</title>
     <link type="text/css" rel="stylesheet" href="styles/font-awesome.min.css">
     <link type="text/css" rel="stylesheet" href="styles/main.css">
 
@@ -55,7 +56,7 @@
     <div class="content">
         <ul class="breadcrumbs">
             <li><a href="index.html">Docs</a> »</li>
-            <li>Home</li>
+            <li>Source: consumers/index.js</li>
         </ul>
         <hr>
         
@@ -63,126 +64,50 @@
 
 
     
+<article>
+    <pre class="prettyprint source linenums"><code>'use strict';
 
+const AbstractConsumer = require('./Abstract');
 
+const index = [
+  require('./Number'),
+  require('./Boolean'),
+  require('./SpecialProperty'),
+  require('./GlobalObject'),
+  require('./String'),
+  require('./Property')
+];
 
-
-
-
-
-
-
-    
-
-
-<article class="readme"><h1>meval - m(imic) eval</h1>
-<p><a href="https://travis-ci.com/marverix/meval"><img src="https://img.shields.io/travis/com/marverix/meval/master.svg" alt="Build Status"></a>
-<a href="releases"><img src="https://img.shields.io/github/release/marverix/meval.svg" alt="Current Release"></a>
-<a href="LICENSE"><img src="https://img.shields.io/badge/License-ISC-blue.svg" alt="License: ISC"></a></p>
-<h2>Info</h2>
-<p>This is <strong>not</strong> a &quot;safe JavaScript eval&quot;. This library only mimics <code>eval()</code> functionality to some point.
-It always returns the value of given expression. You always need to provide context in which it will be executed (context <strong>must be</strong> an Object).</p>
-<p>Pure JavaScript! No dependencies! ^^,</p>
-<h3>What's working</h3>
-<ul>
-<li>one-argument operators:
-<ul>
-<li><code>! ...</code></li>
-<li><code>~ ...</code></li>
-<li><code>+ ...</code></li>
-<li><code>- ...</code></li>
-<li><code>typeof ...</code></li>
-</ul>
-</li>
-<li>two-argument operators:
-<ul>
-<li><code>... . ...</code> (member accessor)</li>
-<li><code>... * ...</code></li>
-<li><code>... / ...</code></li>
-<li><code>... % ...</code></li>
-<li><code>... + ...</code></li>
-<li><code>... - ...</code></li>
-<li><code>... &gt;= ...</code></li>
-<li><code>... &lt;= ...</code></li>
-<li><code>... &gt; ...</code></li>
-<li><code>... &lt; ...</code></li>
-<li><code>... instanceof ...</code></li>
-<li><code>... in ...</code></li>
-<li><code>... === ...</code></li>
-<li><code>... !== ...</code></li>
-<li><code>... == ...</code></li>
-<li><code>... != ...</code></li>
-<li><code>... &amp;&amp; ...</code></li>
-<li><code>... || ...</code></li>
-<li><code>... &amp; ...</code></li>
-<li><code>... | ...</code></li>
-<li><code>... ^ ...</code></li>
-</ul>
-</li>
-<li>three-argument operator:
-<ul>
-<li><code>... ? ... : ...</code></li>
-</ul>
-</li>
-<li>Strings, Numbers (both Integers and Floats) and Booleans
-<ul>
-<li>Node: Interpolation in Strings is not planned for now to be implemented</li>
-</ul>
-</li>
-<li>properties:
-<ul>
-<li><code>undefined</code></li>
-<li><code>null</code></li>
-<li><code>NaN</code></li>
-<li><code>Infinity</code></li>
-</ul>
-</li>
-<li>grouping (paranthesis)</li>
-<li>calling methods
-<ul>
-<li>support nested methods (e.g. <code>foo(1, bar(item.a, item.b))</code>)</li>
-</ul>
-</li>
-<li>accessing allowed global Object:
-<ul>
-<li><code>Date</code></li>
-<li><code>Math</code></li>
-<li><code>Number</code></li>
-<li><code>String</code></li>
-<li><code>Array</code></li>
-<li><code>Object</code></li>
-</ul>
-</li>
-<li>mixing above</li>
-</ul>
-<h3>TODO</h3>
-<ul>
-<li>one-argument operators:
-<ul>
-<li><code>new</code> (I don't know if it's good idea?)</li>
-</ul>
-</li>
-</ul>
-<h2>Usage</h2>
-<pre class="prettyprint source lang-js"><code>/**
- * @param {String} expression Expression to be parsed
- * @param {Object} context Context for expression
+/**
+ * Check is given something is a Consumer
+ * @param {*} sth
+ * @returns {boolean}
  */
-meval(expression, context)
-</code></pre>
-<h3>Example</h3>
-<pre class="prettyprint source lang-js"><code>&lt;&lt; meval('item.a + item.b * 5', { item: { a: 2, b: 3 } })
->> 17
-</code></pre>
-<h2>Authors</h2>
-<ul>
-<li><strong>Marek Sierociński</strong> - <a href="https://github.com/marverix">marverix</a></li>
-</ul>
-<p>See also the list of <a href="https://github.com/marverix/meval/contributors">contributors</a>
-who participated in this project.</p>
-<h2>License</h2>
-<p>This project is licensed under the ISC License - see the <a href="LICENSE">LICENSE</a> file for details.</p></article>
+function isConsumer (sth) {
+  return sth instanceof AbstractConsumer;
+}
 
+/**
+ * Find proper Consumer
+ * @param {string} str
+ * @returns {AbstractConsumer}
+ */
+function find (str) {
+  for (let entity of index) {
+    if (entity.$pattern.test(str)) {
+      return entity;
+    }
+  }
+
+  return null;
+}
+
+module.exports = {
+  find,
+  isConsumer
+};
+</code></pre>
+</article>
 
 
 
@@ -202,8 +127,8 @@ who participated in this project.</p>
 window.isApi = true
 window.isManual = false
 window.doc = {
-    name: 'meval',
-    longname: 'package:meval',
+    name: '',
+    longname: '',
 }
 
 if (!doc.name) isApi = false

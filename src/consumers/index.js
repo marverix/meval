@@ -6,6 +6,7 @@ const index = [
   require('./Number'),
   require('./Boolean'),
   require('./SpecialProperty'),
+  require('./GlobalObject'),
   require('./String'),
   require('./Property')
 ];

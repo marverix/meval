@@ -1,4 +1,4 @@
-/* meval v0.7.0 | Copyright 2020 (c) Marek Sierociński| https://github.com/marverix/meval/blob/master/LICENSE */
+/* meval v1.0.0 | Copyright 2020 (c) Marek Sierociński| https://github.com/marverix/meval/blob/master/LICENSE */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -86,6 +86,36 @@
     }
 
     return _assertThisInitialized(self);
+  }
+
+  function _superPropBase(object, property) {
+    while (!Object.prototype.hasOwnProperty.call(object, property)) {
+      object = _getPrototypeOf(object);
+      if (object === null) break;
+    }
+
+    return object;
+  }
+
+  function _get(target, property, receiver) {
+    if (typeof Reflect !== "undefined" && Reflect.get) {
+      _get = Reflect.get;
+    } else {
+      _get = function _get(target, property, receiver) {
+        var base = _superPropBase(target, property);
+
+        if (!base) return;
+        var desc = Object.getOwnPropertyDescriptor(base, property);
+
+        if (desc.get) {
+          return desc.get.call(receiver);
+        }
+
+        return desc.value;
+      };
+    }
+
+    return _get(target, property, receiver || target);
   }
 
   /* eslint-disable no-unused-vars */
@@ -296,6 +326,62 @@
   SpecialPropertyConsumer.$pattern = /^(?:undefined|null|NaN|Infinity)/;
   var SpecialProperty = SpecialPropertyConsumer;
 
+  var GlobalObjectConsumer =
+  /*#__PURE__*/
+  function (_AbstractConsumer) {
+    _inherits(GlobalObjectConsumer, _AbstractConsumer);
+
+    function GlobalObjectConsumer() {
+      _classCallCheck(this, GlobalObjectConsumer);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(GlobalObjectConsumer).call(this));
+    }
+
+    _createClass(GlobalObjectConsumer, [{
+      key: "take",
+      value: function take(_char) {
+        this.add(_char);
+
+        if (this.$pattern.test(this.data)) {
+          return TakeResponseEnum.OK_CONTENTED;
+        } else {
+          return TakeResponseEnum.OK;
+        }
+      }
+    }, {
+      key: "resolve",
+      value: function resolve() {
+        switch (this.data) {
+          case 'Date':
+            return Date;
+
+          case 'Math':
+            return Math;
+
+          case 'Number':
+            return Number;
+
+          case 'String':
+            return String;
+
+          case 'Array':
+            return Array;
+
+          case 'Object':
+            return Object;
+
+          default:
+            throw new Error('Unexpected end of the global object');
+        }
+      }
+    }]);
+
+    return GlobalObjectConsumer;
+  }(Abstract);
+
+  GlobalObjectConsumer.$pattern = /^(?:Date|Math|Number|String|Array|Object)/;
+  var GlobalObject = GlobalObjectConsumer;
+
   var StringConsumer =
   /*#__PURE__*/
   function (_AbstractConsumer) {
@@ -393,7 +479,7 @@
   PropertyConsumer.$pattern = /^[$_A-Za-z]/;
   var Property = PropertyConsumer;
 
-  var index = [_Number, _Boolean, SpecialProperty, _String, Property];
+  var index = [_Number, _Boolean, SpecialProperty, GlobalObject, _String, Property];
   /**
    * Check is given something is a Consumer
    * @param {*} sth
@@ -493,6 +579,38 @@
   }(AbstractEntity_1);
 
   var Abstract$1 = AbstractOperator;
+
+  var FunctionCallOperator =
+  /*#__PURE__*/
+  function (_AbstractOperator) {
+    _inherits(FunctionCallOperator, _AbstractOperator);
+
+    function FunctionCallOperator(args) {
+      var _this;
+
+      _classCallCheck(this, FunctionCallOperator);
+
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(FunctionCallOperator).call(this));
+      _this.args = args;
+      return _this;
+    }
+
+    _createClass(FunctionCallOperator, [{
+      key: "execute",
+      value: function execute(context, myIndex, entities) {
+        var prevIndex = myIndex - 1;
+        var leftSide = this.resolveSide(entities[prevIndex], context);
+        var result = leftSide.apply(null, this.args);
+        entities.splice(prevIndex, 2, result);
+      }
+    }]);
+
+    return FunctionCallOperator;
+  }(Abstract$1);
+
+  FunctionCallOperator.$pattern = null;
+  FunctionCallOperator.$prevMustBeConsumer = true;
+  var FunctionCall = FunctionCallOperator;
 
   var Abstract1ArgOperator =
   /*#__PURE__*/
@@ -718,7 +836,13 @@
       value: function _execute(leftSide, rightSide, context) {
         leftSide = this.resolveSide(leftSide, context);
         rightSide = this.resolveSide(rightSide, false);
-        return leftSide[rightSide];
+        var result = leftSide[rightSide];
+
+        if (typeof result === 'function') {
+          result = result.bind(leftSide);
+        }
+
+        return result;
       }
     }]);
 
@@ -1303,7 +1427,7 @@
   BitwiseXorOperator.$pattern = /^\^/;
   var BitwiseXor = BitwiseXorOperator;
 
-  var index$1 = [MemberAccess, LogicalNot, BitwiseNot, Unary.Plus, Unary.Negation, Typeof, Multiply, Divide, Modulo, Plus, Minus, GreaterEq, LessEq, Greater, Less, Instanceof, In, Identity, Nonidentity, Equality, Inequality, LogicalAnd, LogicalOr, BitwiseAnd, BitwiseOr, BitwiseXor, Conditional.Start, Conditional.End]; // set priority
+  var index$1 = [MemberAccess, FunctionCall, LogicalNot, BitwiseNot, Unary.Plus, Unary.Negation, Typeof, Multiply, Divide, Modulo, Plus, Minus, GreaterEq, LessEq, Greater, Less, Instanceof, In, Identity, Nonidentity, Equality, Inequality, LogicalAnd, LogicalOr, BitwiseAnd, BitwiseOr, BitwiseXor, Conditional.Start, Conditional.End]; // set priority
 
   for (var i = 0; i < index$1.length; i++) {
     index$1[i].$priority = index$1.length - i;
@@ -1335,7 +1459,7 @@
       for (var _iterator = index$1[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
         var entity = _step.value;
 
-        if (entity.$pattern.test(str) && (!entity.$prevMustBeConsumer && !isLastEntityConsumer || !entity.$prevMustntBeConsumer && isLastEntityConsumer)) {
+        if (entity.$pattern != null && entity.$pattern.test(str) && (!entity.$prevMustBeConsumer && !isLastEntityConsumer || !entity.$prevMustntBeConsumer && isLastEntityConsumer)) {
           return entity;
         }
       }
@@ -1359,63 +1483,32 @@
 
   var operators = {
     find: find$1,
-    isOperator: isOperator
+    isOperator: isOperator,
+    FunctionCall: FunctionCall
   };
 
   var whiteChar = /\s/;
   var groupOpening = /\(/;
   var groupClosing = /\)/;
+  var nextArgument = /,/;
 
-  var Evaluation =
+  var AbstractEvaluation =
   /*#__PURE__*/
   function () {
-    /**
-     * Evaluation of expression in given context
-     *
-     * @constructor
-     * @param {String} expression
-     * @param {Object} context
-     */
+    function AbstractEvaluation() {
+      _classCallCheck(this, AbstractEvaluation);
 
-    /**
-    * Evaluation of subexpression
-    *
-    * @constructor
-    * @param {Evaluation} parent
-    */
-    function Evaluation(arg0, context) {
-      _classCallCheck(this, Evaluation);
-
-      if (arg0 instanceof Evaluation) {
-        this.parent = arg0;
-      } else {
-        if (typeof arg0 !== 'string') {
-          throw new TypeError('expression is not a String');
-        }
-
-        if (_typeof(context) !== 'object' || context === null) {
-          throw new TypeError('expression is not an Object');
-        }
-
-        this.parent = null;
-        this._expression = arg0;
-        this._context = context;
-        this._idx = 0;
-      }
+      this.entities = [];
+      this.currentEntity = null;
     }
     /**
-     * Expression Getter
+     * Run Evaluation
      */
 
 
-    _createClass(Evaluation, [{
+    _createClass(AbstractEvaluation, [{
       key: "run",
-
-      /**
-       * Run Evaluation
-       */
       value: function run() {
-        this.entities = [];
         this.readExpression();
         return this.execute();
       }
@@ -1428,28 +1521,16 @@
     }, {
       key: "readExpression",
       value: function readExpression() {
-        this.currentEntity = null;
-
         var _char, response, Entity;
 
         for (this.idx; this.idx < this.expression.length; this.idx++) {
           _char = this.expression[this.idx]; // check if there is an entity
 
           if (this.currentEntity == null) {
-            // just skip if it's white char
-            if (whiteChar.test(_char)) {
-              continue; // evaluate group if it's opening
-            } else if (groupOpening.test(_char)) {
-              this.evaluateGroup();
-              continue; // closing group?
-            } else if (groupClosing.test(_char)) {
-              // is this even a sub-evaluation?
-              if (this.parent == null) {
-                throw new Error('Unexpected group closing char');
-              } else {
-                this.idx++;
-                break;
-              }
+            if (this.shouldFinish(_char)) {
+              break;
+            } else if (this.shouldSkip(_char)) {
+              continue;
             } // if not then find one
 
 
@@ -1506,13 +1587,44 @@
 
 
           this.entities[current.index].execute(this.context, current.index, this.entities);
-        }
+        } // Lonely cosumer left? Oh, let's take care of you...
+
 
         if (consumers.isConsumer(this.entities[0])) {
           this.entities[0] = this.entities[0].resolve(this.context);
         }
 
         return this.entities[0];
+      }
+      /**
+       * Should skip the turn?
+       * @param {string} char
+       * @return {boolean}
+       */
+
+    }, {
+      key: "shouldSkip",
+      value: function shouldSkip(_char2) {
+        if (whiteChar.test(_char2)) {
+          return true; // evaluate group if it's opening
+        } else if (groupOpening.test(_char2)) {
+          this.subEvaluate(this.isLastEntityConsumer);
+          return true;
+        }
+
+        return false;
+      }
+      /**
+       * Should finish evaluation?
+       * @param {string} char
+       * @return {boolean}
+       */
+      // eslint-disable-next-line no-unused-vars
+
+    }, {
+      key: "shouldFinish",
+      value: function shouldFinish(_char3) {
+        return false;
       }
       /**
        * Find an Entity that wants this char
@@ -1546,49 +1658,17 @@
        */
 
     }, {
-      key: "evaluateGroup",
+      key: "subEvaluate",
 
       /**
-       * Evaluate the Group
+       * Do some class-based evaluation
        */
-      value: function evaluateGroup() {
+      value: function subEvaluate() {
+        var arg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+        var Sub = arg ? ArgEvaluation : SubEvaluation;
         this.idx++;
-        this.currentEntity = new Evaluation(this).run();
+        this.currentEntity = new Sub(this).run();
         this.resolveEntity();
-      }
-    }, {
-      key: "expression",
-      get: function get() {
-        return this.parent == null ? this._expression : this.parent._expression;
-      }
-      /**
-       * Context Getter
-       */
-
-    }, {
-      key: "context",
-      get: function get() {
-        return this.parent == null ? this._context : this.parent._context;
-      }
-      /**
-       * Current Index Getter
-       */
-
-    }, {
-      key: "idx",
-      get: function get() {
-        return this.parent == null ? this._idx : this.parent._idx;
-      }
-      /**
-       * Current Index Setter
-       */
-      ,
-      set: function set(val) {
-        if (this.parent == null) {
-          this._idx = val;
-        } else {
-          this.parent._idx = val;
-        }
       }
     }, {
       key: "isLastEntityConsumer",
@@ -1597,10 +1677,165 @@
       }
     }]);
 
-    return Evaluation;
+    return AbstractEvaluation;
   }();
 
-  var Evaluation_1 = Evaluation;
+  var MainEvaluation =
+  /*#__PURE__*/
+  function (_AbstractEvaluation) {
+    _inherits(MainEvaluation, _AbstractEvaluation);
+
+    /**
+     * Evaluation of expression in given context
+     *
+     * @constructor
+     * @param {String} expression
+     * @param {Object} context
+     */
+    function MainEvaluation(expression, context) {
+      var _this;
+
+      _classCallCheck(this, MainEvaluation);
+
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(MainEvaluation).call(this));
+
+      if (typeof expression !== 'string') {
+        throw new TypeError('expression is not a String');
+      }
+
+      if (_typeof(context) !== 'object' || context === null) {
+        throw new TypeError('context is not an Object');
+      }
+
+      _this.expression = expression;
+      _this.context = context;
+      _this.idx = 0;
+      return _this;
+    }
+
+    return MainEvaluation;
+  }(AbstractEvaluation);
+
+  var SubEvaluation =
+  /*#__PURE__*/
+  function (_AbstractEvaluation2) {
+    _inherits(SubEvaluation, _AbstractEvaluation2);
+
+    /**
+     * Evaluation of sub-expression
+     *
+     * @constructor
+     * @param {AbstractEvaluation} parent
+     */
+    function SubEvaluation(parent) {
+      var _this2;
+
+      _classCallCheck(this, SubEvaluation);
+
+      _this2 = _possibleConstructorReturn(this, _getPrototypeOf(SubEvaluation).call(this));
+      _this2.parent = parent;
+      return _this2;
+    }
+    /**
+     * Expression Getter
+     */
+
+
+    _createClass(SubEvaluation, [{
+      key: "shouldFinish",
+
+      /**
+       * Should finish evaluation?
+       * @return {boolean}
+       */
+      value: function shouldFinish(_char4) {
+        if (groupClosing.test(_char4) || nextArgument.test(_char4)) {
+          this.idx++;
+          return true;
+        }
+
+        return false;
+      }
+    }, {
+      key: "expression",
+      get: function get() {
+        return this.parent.expression;
+      }
+      /**
+       * Context Getter
+       */
+
+    }, {
+      key: "context",
+      get: function get() {
+        return this.parent.context;
+      }
+      /**
+       * Current Index Getter
+       */
+
+    }, {
+      key: "idx",
+      get: function get() {
+        return this.parent.idx;
+      }
+      /**
+       * Current Index Setter
+       */
+      ,
+      set: function set(val) {
+        this.parent.idx = val;
+      }
+    }]);
+
+    return SubEvaluation;
+  }(AbstractEvaluation);
+
+  var ArgEvaluation =
+  /*#__PURE__*/
+  function (_SubEvaluation) {
+    _inherits(ArgEvaluation, _SubEvaluation);
+
+    /**
+     * Evaluation of arguments-expression
+     *
+     * @constructor
+     * @param {AbstractEvaluation} parent
+     */
+    function ArgEvaluation(parent) {
+      _classCallCheck(this, ArgEvaluation);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(ArgEvaluation).call(this, parent));
+    }
+    /**
+     * Should skip the turn?
+     * @param {string} char
+     * @return {boolean}
+     */
+
+
+    _createClass(ArgEvaluation, [{
+      key: "shouldSkip",
+      value: function shouldSkip(_char5) {
+        if (_get(_getPrototypeOf(ArgEvaluation.prototype), "shouldSkip", this).call(this, _char5)) {
+          return true;
+        }
+
+        this.idx--;
+        this.subEvaluate(false);
+        return true;
+      }
+    }, {
+      key: "execute",
+      value: function execute() {
+        return new operators.FunctionCall(this.entities);
+      }
+    }]);
+
+    return ArgEvaluation;
+  }(SubEvaluation);
+
+  var Evaluation = MainEvaluation;
 
   /**
    * meval
@@ -1608,9 +1843,8 @@
    * @param {Object} context Context for expression
    */
 
-  function meval(expression) {
-    var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    return new Evaluation_1(expression, context).run();
+  function meval(expression, context) {
+    return new Evaluation(expression, context).run();
   }
 
   var src = meval;

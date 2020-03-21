@@ -6,10 +6,11 @@
 
 ## Info
 
-This is **not** a "safe JavaScript eval". This library only mimics `eval()` functionality to some point.
-It always returns the value of given expression. You always need to provide context in which it will be executed (context **must be** an Object).
-
-Pure JavaScript! No dependencies! ^^,
+* This is **not** a "safe JavaScript eval"!
+* This library only mimics `eval()` functionality to some point.
+* It always returns the value of given expression. You always need to provide context in which it will be executed (context **must be** an Object).
+* Pure JavaScript! No dependencies! ^^,
+* Minified version is only ~16KB
 
 ### What's working
 
@@ -53,13 +54,19 @@ Pure JavaScript! No dependencies! ^^,
 * grouping (paranthesis)
 * calling methods
   * support nested methods (e.g. `foo(1, bar(item.a, item.b))`)
+* accessing allowed global Object:
+  * `Date`
+  * `Math`
+  * `Number`
+  * `String`
+  * `Array`
+  * `Object`
 * mixing above
 
 ### TODO
 
 * one-argument operators:
   * `new` (I don't know if it's good idea?)
-* accessing allowed global Objects such as `Date`, `Math`, `Number`, `String`, `Array` and `Object`
 
 ## Usage
 

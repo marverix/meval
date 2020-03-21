@@ -480,20 +480,20 @@ describe('meval', function() {
       expect(ret).to.be.eq('HELLO WORLD');
     });
 
-    // it('Should return current timestamp', function() {
-    //   var ret = meval('Date.now()', testContext);
-    //   expect(ret).to.be.gt(1000);
-    // });
+    it('Should return current timestamp', function() {
+      var ret = meval('Date.now()', testContext);
+      expect(ret).to.be.gt(1000);
+    });
 
-    // it('Should return true', function() {
-    //   var ret = meval('Number.isInteger(item.a)', testContext);
-    //   expect(ret).to.be.true;
-    // });
+    it('Should return true', function() {
+      var ret = meval('Number.isInteger(item.a)', testContext);
+      expect(ret).to.be.true;
+    });
 
-    // it('Should return 2', function() {
-    //   var ret = meval('Math.min(item.a, item.b)', testContext);
-    //   expect(ret).to.be.eq(2);
-    // });
+    it('Should return 2', function() {
+      var ret = meval('Math.min(item.a, item.b)', testContext);
+      expect(ret).to.be.eq(2);
+    });
 
     it('Should return true', function() {
       var ret = meval('"2" === "2 ".replace(" ", "")', testContext);
