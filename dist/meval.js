@@ -1,4 +1,4 @@
-/* meval v1.0.0 | Copyright 2020 (c) Marek Sierociński| https://github.com/marverix/meval/blob/master/LICENSE */
+/* meval v1.0.1 | Copyright 2020 (c) Marek Sierociński| https://github.com/marverix/meval/blob/master/LICENSE */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -1828,6 +1828,7 @@
     }, {
       key: "execute",
       value: function execute() {
+        this.idx--;
         return new operators.FunctionCall(this.entities);
       }
     }]);

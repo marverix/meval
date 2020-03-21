@@ -299,6 +299,7 @@ class ArgEvaluation extends SubEvaluation {
   }
 
   execute () {
+    this.idx--;
     return new operators.FunctionCall(this.entities);
   }
 
