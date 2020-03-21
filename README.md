@@ -70,6 +70,25 @@
 
 ## Usage
 
+### Install
+
+It's UMD package, so you can use it both: client-side (browser) and server-side (node.js).
+Probably you want to just intall it with `npm`:
+
+```sh
+npm install --save meval
+```
+
+And then just require it:
+
+```js
+const meval = require('meval');
+```
+
+But if you don't want to use `npm`, you can always simply download eg. minified version right from [Releases](releases).
+
+### Run
+
 ```js
 /**
  * @param {String} expression Expression to be parsed
