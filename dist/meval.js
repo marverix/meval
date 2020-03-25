@@ -1,4 +1,4 @@
-/* meval v1.0.2 | Copyright 2020 (c) Marek Sierociński| https://github.com/marverix/meval/blob/master/LICENSE */
+/* meval v1.0.3 | Copyright 2020 (c) Marek Sierociński| https://github.com/marverix/meval/blob/master/LICENSE */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -1325,7 +1325,13 @@
     _createClass(LogicalAndOperator, [{
       key: "_execute",
       value: function _execute(leftSide, rightSide, context) {
-        return this.resolveSide(leftSide, context) && this.resolveSide(rightSide, context);
+        var leftSideResolved = this.resolveSide(leftSide, context);
+
+        if (!leftSideResolved) {
+          return false;
+        } else {
+          return this.resolveSide(rightSide, context);
+        }
       }
     }]);
 
@@ -1349,7 +1355,13 @@
     _createClass(LogicalOrOperator, [{
       key: "_execute",
       value: function _execute(leftSide, rightSide, context) {
-        return this.resolveSide(leftSide, context) || this.resolveSide(rightSide, context);
+        var leftSideResolved = this.resolveSide(leftSide, context);
+
+        if (leftSideResolved) {
+          return true;
+        } else {
+          return this.resolveSide(rightSide, context);
+        }
       }
     }]);
 

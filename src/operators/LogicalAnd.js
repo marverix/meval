@@ -9,7 +9,12 @@ class LogicalAndOperator extends Abstract2ArgOperator {
   }
 
   _execute (leftSide, rightSide, context) {
-    return this.resolveSide(leftSide, context) && this.resolveSide(rightSide, context);
+    let leftSideResolved = this.resolveSide(leftSide, context);
+    if (!leftSideResolved) {
+      return false;
+    } else {
+      return this.resolveSide(rightSide, context);
+    }
   }
 
 }
