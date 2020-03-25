@@ -3,8 +3,12 @@
 const AbstractOperator = require('./Abstract');
 
 const FunctionCall = require('./FunctionCall');
+const Logical = require('./Logical');
 const Unary = require('./Unary');
+const Arithmetic = require('./Arithmetic');
+const Comparison = require('./Comparison');
 const Conditional = require('./Conditional');
+
 
 // create index
 const index = [
@@ -13,39 +17,33 @@ const index = [
 
   FunctionCall,
 
-  require('./LogicalNot'),
-  require('./BitwiseNot'),
+  Logical.Not,
 
   Unary.Plus,
   Unary.Negation,
 
   require('./Typeof'),
 
-  require('./Multiply'),
-  require('./Divide'),
-  require('./Modulo'),
-  require('./Plus'),
-  require('./Minus'),
+  Arithmetic.Multiplication,
+  Arithmetic.Division,
+  Arithmetic.Remainder,
+  Arithmetic.Addition,
+  Arithmetic.Subtraction,
 
-  require('./GreaterEq'),
-  require('./LessEq'),
-  require('./Greater'),
-  require('./Less'),
+  Comparison.GreaterEq,
+  Comparison.LessEq,
+  Comparison.Greater,
+  Comparison.Less,
+  Comparison.Instanceof,
+  Comparison.In,
 
-  require('./Instanceof'),
-  require('./In'),
+  Comparison.Identity,
+  Comparison.Nonidentity,
+  Comparison.Equality,
+  Comparison.Inequality,
 
-  require('./Identity'),
-  require('./Nonidentity'),
-  require('./Equality'),
-  require('./Inequality'),
-
-  require('./LogicalAnd'),
-  require('./LogicalOr'),
-
-  require('./BitwiseAnd'),
-  require('./BitwiseOr'),
-  require('./BitwiseXor'),
+  Logical.And,
+  Logical.Or,
 
   Conditional.Start,
   Conditional.End,

@@ -167,7 +167,12 @@ class AbstractEvaluation {
    * Check if last entity is a Consumer
    */
   get isLastEntityConsumer () {
-    return this.entities.length > 0 ? !operators.isOperator(this.entities[this.entities.length - 1]) : false;
+    if (this.entities.length > 0) {
+      let lastEntity = this.entities[this.entities.length - 1];
+      return lastEntity instanceof operators.FunctionCall ? true : !operators.isOperator(lastEntity);
+    } else {
+      return false;
+    }
   }
 
   /**

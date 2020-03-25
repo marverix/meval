@@ -1,4 +1,4 @@
-/* meval v1.0.3 | Copyright 2020 (c) Marek Sierociński| https://github.com/marverix/meval/blob/master/LICENSE */
+/* meval v1.1.0 | Copyright 2020 (c) Marek Sierociński| https://github.com/marverix/meval/blob/master/LICENSE */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -653,6 +653,146 @@
   Abstract1ArgOperator.$prevMustntBeConsumer = true;
   var Abstract1Arg = Abstract1ArgOperator;
 
+  var Abstract2ArgOperator =
+  /*#__PURE__*/
+  function (_AbstractOperator) {
+    _inherits(Abstract2ArgOperator, _AbstractOperator);
+
+    function Abstract2ArgOperator() {
+      _classCallCheck(this, Abstract2ArgOperator);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(Abstract2ArgOperator).call(this));
+    }
+
+    _createClass(Abstract2ArgOperator, [{
+      key: "execute",
+      value: function execute(context, myIndex, entities) {
+        var prevIndex = myIndex - 1;
+
+        var result = this._execute(entities[prevIndex], entities[myIndex + 1], context);
+
+        entities.splice(prevIndex, 3, result);
+      }
+    }, {
+      key: "_execute",
+      value: function _execute(leftSide, rightSide, context) {
+        throw new Error('Overwrite this method!');
+      }
+    }]);
+
+    return Abstract2ArgOperator;
+  }(Abstract$1);
+
+  Abstract2ArgOperator.$prevMustBeConsumer = true;
+  var Abstract2Arg = Abstract2ArgOperator;
+
+  /**
+   * Not
+   */
+
+
+  var LogicalNotOperator =
+  /*#__PURE__*/
+  function (_Abstract1ArgOperator) {
+    _inherits(LogicalNotOperator, _Abstract1ArgOperator);
+
+    function LogicalNotOperator() {
+      _classCallCheck(this, LogicalNotOperator);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(LogicalNotOperator).call(this));
+    }
+
+    _createClass(LogicalNotOperator, [{
+      key: "_executeForOperator",
+      value: function _executeForOperator(rightSide) {
+        if (rightSide instanceof LogicalNotOperator) {
+          return null;
+        } else {
+          throw new Error('Invalid usage of logical not');
+        }
+      }
+    }, {
+      key: "_executeForConsumer",
+      value: function _executeForConsumer(rightSide, context) {
+        return !this.resolveSide(rightSide, context);
+      }
+    }]);
+
+    return LogicalNotOperator;
+  }(Abstract1Arg);
+
+  LogicalNotOperator.$pattern = /^!(?!=)/;
+  /**
+   * And
+   */
+
+  var LogicalAndOperator =
+  /*#__PURE__*/
+  function (_Abstract2ArgOperator) {
+    _inherits(LogicalAndOperator, _Abstract2ArgOperator);
+
+    function LogicalAndOperator() {
+      _classCallCheck(this, LogicalAndOperator);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(LogicalAndOperator).call(this));
+    }
+
+    _createClass(LogicalAndOperator, [{
+      key: "_execute",
+      value: function _execute(leftSide, rightSide, context) {
+        var leftSideResolved = this.resolveSide(leftSide, context);
+
+        if (!leftSideResolved) {
+          return false;
+        } else {
+          return this.resolveSide(rightSide, context);
+        }
+      }
+    }]);
+
+    return LogicalAndOperator;
+  }(Abstract2Arg);
+
+  LogicalAndOperator.$pattern = /^&&/;
+  /**
+   * Or
+   */
+
+  var LogicalOrOperator =
+  /*#__PURE__*/
+  function (_Abstract2ArgOperator2) {
+    _inherits(LogicalOrOperator, _Abstract2ArgOperator2);
+
+    function LogicalOrOperator() {
+      _classCallCheck(this, LogicalOrOperator);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(LogicalOrOperator).call(this));
+    }
+
+    _createClass(LogicalOrOperator, [{
+      key: "_execute",
+      value: function _execute(leftSide, rightSide, context) {
+        var leftSideResolved = this.resolveSide(leftSide, context);
+
+        if (leftSideResolved) {
+          return true;
+        } else {
+          return this.resolveSide(rightSide, context);
+        }
+      }
+    }]);
+
+    return LogicalOrOperator;
+  }(Abstract2Arg);
+
+  LogicalOrOperator.$pattern = /^\|\|/; // Export
+
+  var Logical = {
+    Not: LogicalNotOperator,
+    And: LogicalAndOperator,
+    Or: LogicalOrOperator
+  };
+
   var UnaryNegationOperator =
   /*#__PURE__*/
   function (_Abstract1ArgOperator) {
@@ -725,6 +865,421 @@
     Negation: UnaryNegationOperator
   };
 
+  /**
+   * Multiplication
+   */
+
+
+  var MultiplicationOperator =
+  /*#__PURE__*/
+  function (_Abstract2ArgOperator) {
+    _inherits(MultiplicationOperator, _Abstract2ArgOperator);
+
+    function MultiplicationOperator() {
+      _classCallCheck(this, MultiplicationOperator);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(MultiplicationOperator).call(this));
+    }
+
+    _createClass(MultiplicationOperator, [{
+      key: "_execute",
+      value: function _execute(leftSide, rightSide, context) {
+        return this.resolveSide(leftSide, context) * this.resolveSide(rightSide, context);
+      }
+    }]);
+
+    return MultiplicationOperator;
+  }(Abstract2Arg);
+
+  MultiplicationOperator.$pattern = /^\*/;
+  /**
+   * Division
+   */
+
+  var DivisionOperator =
+  /*#__PURE__*/
+  function (_Abstract2ArgOperator2) {
+    _inherits(DivisionOperator, _Abstract2ArgOperator2);
+
+    function DivisionOperator() {
+      _classCallCheck(this, DivisionOperator);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(DivisionOperator).call(this));
+    }
+
+    _createClass(DivisionOperator, [{
+      key: "_execute",
+      value: function _execute(leftSide, rightSide, context) {
+        return this.resolveSide(leftSide, context) / this.resolveSide(rightSide, context);
+      }
+    }]);
+
+    return DivisionOperator;
+  }(Abstract2Arg);
+
+  DivisionOperator.$pattern = /^\//;
+  /**
+   * Remainder
+   */
+
+  var RemainderOperator =
+  /*#__PURE__*/
+  function (_Abstract2ArgOperator3) {
+    _inherits(RemainderOperator, _Abstract2ArgOperator3);
+
+    function RemainderOperator() {
+      _classCallCheck(this, RemainderOperator);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(RemainderOperator).call(this));
+    }
+
+    _createClass(RemainderOperator, [{
+      key: "_execute",
+      value: function _execute(leftSide, rightSide, context) {
+        return this.resolveSide(leftSide, context) % this.resolveSide(rightSide, context);
+      }
+    }]);
+
+    return RemainderOperator;
+  }(Abstract2Arg);
+
+  RemainderOperator.$pattern = /^%/;
+  /**
+   * Addition
+   */
+
+  var AdditionOperator =
+  /*#__PURE__*/
+  function (_Abstract2ArgOperator4) {
+    _inherits(AdditionOperator, _Abstract2ArgOperator4);
+
+    function AdditionOperator() {
+      _classCallCheck(this, AdditionOperator);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(AdditionOperator).call(this));
+    }
+
+    _createClass(AdditionOperator, [{
+      key: "_execute",
+      value: function _execute(leftSide, rightSide, context) {
+        return this.resolveSide(leftSide, context) + this.resolveSide(rightSide, context);
+      }
+    }]);
+
+    return AdditionOperator;
+  }(Abstract2Arg);
+
+  AdditionOperator.$pattern = /^\+/;
+  /**
+   * Subtraction
+   */
+
+  var SubtractionOperator =
+  /*#__PURE__*/
+  function (_Abstract2ArgOperator5) {
+    _inherits(SubtractionOperator, _Abstract2ArgOperator5);
+
+    function SubtractionOperator() {
+      _classCallCheck(this, SubtractionOperator);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(SubtractionOperator).call(this));
+    }
+
+    _createClass(SubtractionOperator, [{
+      key: "_execute",
+      value: function _execute(leftSide, rightSide, context) {
+        return this.resolveSide(leftSide, context) - this.resolveSide(rightSide, context);
+      }
+    }]);
+
+    return SubtractionOperator;
+  }(Abstract2Arg);
+
+  SubtractionOperator.$pattern = /^-/; // Export
+
+  var Arithmetic = {
+    Multiplication: MultiplicationOperator,
+    Division: DivisionOperator,
+    Remainder: RemainderOperator,
+    Addition: AdditionOperator,
+    Subtraction: SubtractionOperator
+  };
+
+  /**
+   * GreaterEq
+   */
+
+
+  var GreaterEqOperator =
+  /*#__PURE__*/
+  function (_Abstract2ArgOperator) {
+    _inherits(GreaterEqOperator, _Abstract2ArgOperator);
+
+    function GreaterEqOperator() {
+      _classCallCheck(this, GreaterEqOperator);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(GreaterEqOperator).call(this));
+    }
+
+    _createClass(GreaterEqOperator, [{
+      key: "_execute",
+      value: function _execute(leftSide, rightSide, context) {
+        return this.resolveSide(leftSide, context) >= this.resolveSide(rightSide, context);
+      }
+    }]);
+
+    return GreaterEqOperator;
+  }(Abstract2Arg);
+
+  GreaterEqOperator.$pattern = /^>=/;
+  /**
+   * LessEq
+   */
+
+  var LessEqOperator =
+  /*#__PURE__*/
+  function (_Abstract2ArgOperator2) {
+    _inherits(LessEqOperator, _Abstract2ArgOperator2);
+
+    function LessEqOperator() {
+      _classCallCheck(this, LessEqOperator);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(LessEqOperator).call(this));
+    }
+
+    _createClass(LessEqOperator, [{
+      key: "_execute",
+      value: function _execute(leftSide, rightSide, context) {
+        return this.resolveSide(leftSide, context) <= this.resolveSide(rightSide, context);
+      }
+    }]);
+
+    return LessEqOperator;
+  }(Abstract2Arg);
+
+  LessEqOperator.$pattern = /^<=/;
+  /**
+   * Greater
+   */
+
+  var GreaterOperator =
+  /*#__PURE__*/
+  function (_Abstract2ArgOperator3) {
+    _inherits(GreaterOperator, _Abstract2ArgOperator3);
+
+    function GreaterOperator() {
+      _classCallCheck(this, GreaterOperator);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(GreaterOperator).call(this));
+    }
+
+    _createClass(GreaterOperator, [{
+      key: "_execute",
+      value: function _execute(leftSide, rightSide, context) {
+        return this.resolveSide(leftSide, context) > this.resolveSide(rightSide, context);
+      }
+    }]);
+
+    return GreaterOperator;
+  }(Abstract2Arg);
+
+  GreaterOperator.$pattern = /^>/;
+  /**
+   * Less
+   */
+
+  var LessOperator =
+  /*#__PURE__*/
+  function (_Abstract2ArgOperator4) {
+    _inherits(LessOperator, _Abstract2ArgOperator4);
+
+    function LessOperator() {
+      _classCallCheck(this, LessOperator);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(LessOperator).call(this));
+    }
+
+    _createClass(LessOperator, [{
+      key: "_execute",
+      value: function _execute(leftSide, rightSide, context) {
+        return this.resolveSide(leftSide, context) < this.resolveSide(rightSide, context);
+      }
+    }]);
+
+    return LessOperator;
+  }(Abstract2Arg);
+
+  LessOperator.$pattern = /^</;
+  /**
+   * Instanceof
+   */
+
+  var InstanceofOperator =
+  /*#__PURE__*/
+  function (_Abstract2ArgOperator5) {
+    _inherits(InstanceofOperator, _Abstract2ArgOperator5);
+
+    function InstanceofOperator() {
+      _classCallCheck(this, InstanceofOperator);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(InstanceofOperator).call(this));
+    }
+
+    _createClass(InstanceofOperator, [{
+      key: "_execute",
+      value: function _execute(leftSide, rightSide, context) {
+        return this.resolveSide(leftSide, context) instanceof this.resolveSide(rightSide, context);
+      }
+    }]);
+
+    return InstanceofOperator;
+  }(Abstract2Arg);
+
+  InstanceofOperator.$pattern = /^instanceof/;
+  /**
+   * In
+   */
+
+  var InOperator =
+  /*#__PURE__*/
+  function (_Abstract2ArgOperator6) {
+    _inherits(InOperator, _Abstract2ArgOperator6);
+
+    function InOperator() {
+      _classCallCheck(this, InOperator);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(InOperator).call(this));
+    }
+
+    _createClass(InOperator, [{
+      key: "_execute",
+      value: function _execute(leftSide, rightSide, context) {
+        return this.resolveSide(leftSide, context) in this.resolveSide(rightSide, context);
+      }
+    }]);
+
+    return InOperator;
+  }(Abstract2Arg);
+
+  InOperator.$pattern = /^in/;
+  /**
+   * Identity
+   */
+
+  var IdentityOperator =
+  /*#__PURE__*/
+  function (_Abstract2ArgOperator7) {
+    _inherits(IdentityOperator, _Abstract2ArgOperator7);
+
+    function IdentityOperator() {
+      _classCallCheck(this, IdentityOperator);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(IdentityOperator).call(this));
+    }
+
+    _createClass(IdentityOperator, [{
+      key: "_execute",
+      value: function _execute(leftSide, rightSide, context) {
+        return this.resolveSide(leftSide, context) === this.resolveSide(rightSide, context);
+      }
+    }]);
+
+    return IdentityOperator;
+  }(Abstract2Arg);
+
+  IdentityOperator.$pattern = /^===/;
+  /**
+   * Nonidentity
+   */
+
+  var NonidentityOperator =
+  /*#__PURE__*/
+  function (_Abstract2ArgOperator8) {
+    _inherits(NonidentityOperator, _Abstract2ArgOperator8);
+
+    function NonidentityOperator() {
+      _classCallCheck(this, NonidentityOperator);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(NonidentityOperator).call(this));
+    }
+
+    _createClass(NonidentityOperator, [{
+      key: "_execute",
+      value: function _execute(leftSide, rightSide, context) {
+        return this.resolveSide(leftSide, context) !== this.resolveSide(rightSide, context);
+      }
+    }]);
+
+    return NonidentityOperator;
+  }(Abstract2Arg);
+
+  NonidentityOperator.$pattern = /^!==/;
+  /**
+   * Equality
+   */
+
+  var EqualityOperator =
+  /*#__PURE__*/
+  function (_Abstract2ArgOperator9) {
+    _inherits(EqualityOperator, _Abstract2ArgOperator9);
+
+    function EqualityOperator() {
+      _classCallCheck(this, EqualityOperator);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(EqualityOperator).call(this));
+    }
+
+    _createClass(EqualityOperator, [{
+      key: "_execute",
+      value: function _execute(leftSide, rightSide, context) {
+        return this.resolveSide(leftSide, context) == this.resolveSide(rightSide, context);
+      }
+    }]);
+
+    return EqualityOperator;
+  }(Abstract2Arg);
+
+  EqualityOperator.$pattern = /^==/;
+  /**
+   * Inequality
+   */
+
+  var InequalityOperator =
+  /*#__PURE__*/
+  function (_Abstract2ArgOperator10) {
+    _inherits(InequalityOperator, _Abstract2ArgOperator10);
+
+    function InequalityOperator() {
+      _classCallCheck(this, InequalityOperator);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(InequalityOperator).call(this));
+    }
+
+    _createClass(InequalityOperator, [{
+      key: "_execute",
+      value: function _execute(leftSide, rightSide, context) {
+        return this.resolveSide(leftSide, context) != this.resolveSide(rightSide, context);
+      }
+    }]);
+
+    return InequalityOperator;
+  }(Abstract2Arg);
+
+  InequalityOperator.$pattern = /^!=/; // Export
+
+  var Comparison = {
+    GreaterEq: GreaterEqOperator,
+    LessEq: LessEqOperator,
+    Greater: GreaterOperator,
+    Less: LessOperator,
+    Instanceof: InstanceofOperator,
+    In: InOperator,
+    Identity: IdentityOperator,
+    Nonidentity: NonidentityOperator,
+    Equality: EqualityOperator,
+    Inequality: InequalityOperator
+  };
+
   var err = 'Invalid usage of three-argument operator';
 
   var ConditionalStartOperator =
@@ -787,39 +1342,6 @@
     End: ConditionalEndOperator
   };
 
-  var Abstract2ArgOperator =
-  /*#__PURE__*/
-  function (_AbstractOperator) {
-    _inherits(Abstract2ArgOperator, _AbstractOperator);
-
-    function Abstract2ArgOperator() {
-      _classCallCheck(this, Abstract2ArgOperator);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(Abstract2ArgOperator).call(this));
-    }
-
-    _createClass(Abstract2ArgOperator, [{
-      key: "execute",
-      value: function execute(context, myIndex, entities) {
-        var prevIndex = myIndex - 1;
-
-        var result = this._execute(entities[prevIndex], entities[myIndex + 1], context);
-
-        entities.splice(prevIndex, 3, result);
-      }
-    }, {
-      key: "_execute",
-      value: function _execute(leftSide, rightSide, context) {
-        throw new Error('Overwrite this method!');
-      }
-    }]);
-
-    return Abstract2ArgOperator;
-  }(Abstract$1);
-
-  Abstract2ArgOperator.$prevMustBeConsumer = true;
-  var Abstract2Arg = Abstract2ArgOperator;
-
   var MemberAccessOperator =
   /*#__PURE__*/
   function (_Abstract2ArgOperator) {
@@ -856,72 +1378,6 @@
   MemberAccessOperator.$pattern = /^\./;
   var MemberAccess = MemberAccessOperator;
 
-  var LogicalNotOperator =
-  /*#__PURE__*/
-  function (_Abstract1ArgOperator) {
-    _inherits(LogicalNotOperator, _Abstract1ArgOperator);
-
-    function LogicalNotOperator() {
-      _classCallCheck(this, LogicalNotOperator);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(LogicalNotOperator).call(this));
-    }
-
-    _createClass(LogicalNotOperator, [{
-      key: "_executeForOperator",
-      value: function _executeForOperator(rightSide) {
-        if (rightSide instanceof LogicalNotOperator) {
-          return null;
-        } else {
-          throw new Error('Invalid usage of logical not');
-        }
-      }
-    }, {
-      key: "_executeForConsumer",
-      value: function _executeForConsumer(rightSide, context) {
-        return !this.resolveSide(rightSide, context);
-      }
-    }]);
-
-    return LogicalNotOperator;
-  }(Abstract1Arg);
-
-  LogicalNotOperator.$pattern = /^!(?!=)/;
-  var LogicalNot = LogicalNotOperator;
-
-  var BitwiseNotOperator =
-  /*#__PURE__*/
-  function (_Abstract1ArgOperator) {
-    _inherits(BitwiseNotOperator, _Abstract1ArgOperator);
-
-    function BitwiseNotOperator() {
-      _classCallCheck(this, BitwiseNotOperator);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(BitwiseNotOperator).call(this));
-    }
-
-    _createClass(BitwiseNotOperator, [{
-      key: "_executeForOperator",
-      value: function _executeForOperator(rightSide) {
-        if (rightSide instanceof BitwiseNotOperator) {
-          return null;
-        } else {
-          throw new Error('Invalid usage of bitwise not');
-        }
-      }
-    }, {
-      key: "_executeForConsumer",
-      value: function _executeForConsumer(rightSide, context) {
-        return ~this.resolveSide(rightSide, context);
-      }
-    }]);
-
-    return BitwiseNotOperator;
-  }(Abstract1Arg);
-
-  BitwiseNotOperator.$pattern = /^~/;
-  var BitwiseNot = BitwiseNotOperator;
-
   var TypeofOperator =
   /*#__PURE__*/
   function (_Abstract1ArgOperator) {
@@ -951,499 +1407,7 @@
   TypeofOperator.$pattern = /^typeof(?![A-Za-z0-9$_])/;
   var Typeof = TypeofOperator;
 
-  var MultiplyOperator =
-  /*#__PURE__*/
-  function (_Abstract2ArgOperator) {
-    _inherits(MultiplyOperator, _Abstract2ArgOperator);
-
-    function MultiplyOperator() {
-      _classCallCheck(this, MultiplyOperator);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(MultiplyOperator).call(this));
-    }
-
-    _createClass(MultiplyOperator, [{
-      key: "_execute",
-      value: function _execute(leftSide, rightSide, context) {
-        return this.resolveSide(leftSide, context) * this.resolveSide(rightSide, context);
-      }
-    }]);
-
-    return MultiplyOperator;
-  }(Abstract2Arg);
-
-  MultiplyOperator.$pattern = /^\*/;
-  var Multiply = MultiplyOperator;
-
-  var DivideOperator =
-  /*#__PURE__*/
-  function (_Abstract2ArgOperator) {
-    _inherits(DivideOperator, _Abstract2ArgOperator);
-
-    function DivideOperator() {
-      _classCallCheck(this, DivideOperator);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(DivideOperator).call(this));
-    }
-
-    _createClass(DivideOperator, [{
-      key: "_execute",
-      value: function _execute(leftSide, rightSide, context) {
-        return this.resolveSide(leftSide, context) / this.resolveSide(rightSide, context);
-      }
-    }]);
-
-    return DivideOperator;
-  }(Abstract2Arg);
-
-  DivideOperator.$pattern = /^\//;
-  var Divide = DivideOperator;
-
-  var ModuloOperator =
-  /*#__PURE__*/
-  function (_Abstract2ArgOperator) {
-    _inherits(ModuloOperator, _Abstract2ArgOperator);
-
-    function ModuloOperator() {
-      _classCallCheck(this, ModuloOperator);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(ModuloOperator).call(this));
-    }
-
-    _createClass(ModuloOperator, [{
-      key: "_execute",
-      value: function _execute(leftSide, rightSide, context) {
-        return this.resolveSide(leftSide, context) % this.resolveSide(rightSide, context);
-      }
-    }]);
-
-    return ModuloOperator;
-  }(Abstract2Arg);
-
-  ModuloOperator.$pattern = /^%/;
-  var Modulo = ModuloOperator;
-
-  var PlusOperator =
-  /*#__PURE__*/
-  function (_Abstract2ArgOperator) {
-    _inherits(PlusOperator, _Abstract2ArgOperator);
-
-    function PlusOperator() {
-      _classCallCheck(this, PlusOperator);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(PlusOperator).call(this));
-    }
-
-    _createClass(PlusOperator, [{
-      key: "_execute",
-      value: function _execute(leftSide, rightSide, context) {
-        return this.resolveSide(leftSide, context) + this.resolveSide(rightSide, context);
-      }
-    }]);
-
-    return PlusOperator;
-  }(Abstract2Arg);
-
-  PlusOperator.$pattern = /^\+/;
-  var Plus = PlusOperator;
-
-  var MinusOperator =
-  /*#__PURE__*/
-  function (_Abstract2ArgOperator) {
-    _inherits(MinusOperator, _Abstract2ArgOperator);
-
-    function MinusOperator() {
-      _classCallCheck(this, MinusOperator);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(MinusOperator).call(this));
-    }
-
-    _createClass(MinusOperator, [{
-      key: "_execute",
-      value: function _execute(leftSide, rightSide, context) {
-        return this.resolveSide(leftSide, context) - this.resolveSide(rightSide, context);
-      }
-    }]);
-
-    return MinusOperator;
-  }(Abstract2Arg);
-
-  MinusOperator.$pattern = /^-/;
-  var Minus = MinusOperator;
-
-  var GreaterEqOperator =
-  /*#__PURE__*/
-  function (_Abstract2ArgOperator) {
-    _inherits(GreaterEqOperator, _Abstract2ArgOperator);
-
-    function GreaterEqOperator() {
-      _classCallCheck(this, GreaterEqOperator);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(GreaterEqOperator).call(this));
-    }
-
-    _createClass(GreaterEqOperator, [{
-      key: "_execute",
-      value: function _execute(leftSide, rightSide, context) {
-        return this.resolveSide(leftSide, context) >= this.resolveSide(rightSide, context);
-      }
-    }]);
-
-    return GreaterEqOperator;
-  }(Abstract2Arg);
-
-  GreaterEqOperator.$pattern = /^>=/;
-  var GreaterEq = GreaterEqOperator;
-
-  var LessEqOperator =
-  /*#__PURE__*/
-  function (_Abstract2ArgOperator) {
-    _inherits(LessEqOperator, _Abstract2ArgOperator);
-
-    function LessEqOperator() {
-      _classCallCheck(this, LessEqOperator);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(LessEqOperator).call(this));
-    }
-
-    _createClass(LessEqOperator, [{
-      key: "_execute",
-      value: function _execute(leftSide, rightSide, context) {
-        return this.resolveSide(leftSide, context) <= this.resolveSide(rightSide, context);
-      }
-    }]);
-
-    return LessEqOperator;
-  }(Abstract2Arg);
-
-  LessEqOperator.$pattern = /^<=/;
-  var LessEq = LessEqOperator;
-
-  var GreaterOperator =
-  /*#__PURE__*/
-  function (_Abstract2ArgOperator) {
-    _inherits(GreaterOperator, _Abstract2ArgOperator);
-
-    function GreaterOperator() {
-      _classCallCheck(this, GreaterOperator);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(GreaterOperator).call(this));
-    }
-
-    _createClass(GreaterOperator, [{
-      key: "_execute",
-      value: function _execute(leftSide, rightSide, context) {
-        return this.resolveSide(leftSide, context) > this.resolveSide(rightSide, context);
-      }
-    }]);
-
-    return GreaterOperator;
-  }(Abstract2Arg);
-
-  GreaterOperator.$pattern = /^>/;
-  var Greater = GreaterOperator;
-
-  var LessOperator =
-  /*#__PURE__*/
-  function (_Abstract2ArgOperator) {
-    _inherits(LessOperator, _Abstract2ArgOperator);
-
-    function LessOperator() {
-      _classCallCheck(this, LessOperator);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(LessOperator).call(this));
-    }
-
-    _createClass(LessOperator, [{
-      key: "_execute",
-      value: function _execute(leftSide, rightSide, context) {
-        return this.resolveSide(leftSide, context) < this.resolveSide(rightSide, context);
-      }
-    }]);
-
-    return LessOperator;
-  }(Abstract2Arg);
-
-  LessOperator.$pattern = /^</;
-  var Less = LessOperator;
-
-  var InstanceofOperator =
-  /*#__PURE__*/
-  function (_Abstract2ArgOperator) {
-    _inherits(InstanceofOperator, _Abstract2ArgOperator);
-
-    function InstanceofOperator() {
-      _classCallCheck(this, InstanceofOperator);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(InstanceofOperator).call(this));
-    }
-
-    _createClass(InstanceofOperator, [{
-      key: "_execute",
-      value: function _execute(leftSide, rightSide, context) {
-        return this.resolveSide(leftSide, context) instanceof this.resolveSide(rightSide, context);
-      }
-    }]);
-
-    return InstanceofOperator;
-  }(Abstract2Arg);
-
-  InstanceofOperator.$pattern = /^instanceof/;
-  var Instanceof = InstanceofOperator;
-
-  var InOperator =
-  /*#__PURE__*/
-  function (_Abstract2ArgOperator) {
-    _inherits(InOperator, _Abstract2ArgOperator);
-
-    function InOperator() {
-      _classCallCheck(this, InOperator);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(InOperator).call(this));
-    }
-
-    _createClass(InOperator, [{
-      key: "_execute",
-      value: function _execute(leftSide, rightSide, context) {
-        return this.resolveSide(leftSide, context) in this.resolveSide(rightSide, context);
-      }
-    }]);
-
-    return InOperator;
-  }(Abstract2Arg);
-
-  InOperator.$pattern = /^in/;
-  var In = InOperator;
-
-  var IdentityOperator =
-  /*#__PURE__*/
-  function (_Abstract2ArgOperator) {
-    _inherits(IdentityOperator, _Abstract2ArgOperator);
-
-    function IdentityOperator() {
-      _classCallCheck(this, IdentityOperator);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(IdentityOperator).call(this));
-    }
-
-    _createClass(IdentityOperator, [{
-      key: "_execute",
-      value: function _execute(leftSide, rightSide, context) {
-        return this.resolveSide(leftSide, context) === this.resolveSide(rightSide, context);
-      }
-    }]);
-
-    return IdentityOperator;
-  }(Abstract2Arg);
-
-  IdentityOperator.$pattern = /^===/;
-  var Identity = IdentityOperator;
-
-  var NonidentityOperator =
-  /*#__PURE__*/
-  function (_Abstract2ArgOperator) {
-    _inherits(NonidentityOperator, _Abstract2ArgOperator);
-
-    function NonidentityOperator() {
-      _classCallCheck(this, NonidentityOperator);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(NonidentityOperator).call(this));
-    }
-
-    _createClass(NonidentityOperator, [{
-      key: "_execute",
-      value: function _execute(leftSide, rightSide, context) {
-        return this.resolveSide(leftSide, context) !== this.resolveSide(rightSide, context);
-      }
-    }]);
-
-    return NonidentityOperator;
-  }(Abstract2Arg);
-
-  NonidentityOperator.$pattern = /^!==/;
-  var Nonidentity = NonidentityOperator;
-
-  var EqualityOperator =
-  /*#__PURE__*/
-  function (_Abstract2ArgOperator) {
-    _inherits(EqualityOperator, _Abstract2ArgOperator);
-
-    function EqualityOperator() {
-      _classCallCheck(this, EqualityOperator);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(EqualityOperator).call(this));
-    }
-
-    _createClass(EqualityOperator, [{
-      key: "_execute",
-      value: function _execute(leftSide, rightSide, context) {
-        return this.resolveSide(leftSide, context) == this.resolveSide(rightSide, context);
-      }
-    }]);
-
-    return EqualityOperator;
-  }(Abstract2Arg);
-
-  EqualityOperator.$pattern = /^==/;
-  var Equality = EqualityOperator;
-
-  var InequalityOperator =
-  /*#__PURE__*/
-  function (_Abstract2ArgOperator) {
-    _inherits(InequalityOperator, _Abstract2ArgOperator);
-
-    function InequalityOperator() {
-      _classCallCheck(this, InequalityOperator);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(InequalityOperator).call(this));
-    }
-
-    _createClass(InequalityOperator, [{
-      key: "_execute",
-      value: function _execute(leftSide, rightSide, context) {
-        return this.resolveSide(leftSide, context) != this.resolveSide(rightSide, context);
-      }
-    }]);
-
-    return InequalityOperator;
-  }(Abstract2Arg);
-
-  InequalityOperator.$pattern = /^!=/;
-  var Inequality = InequalityOperator;
-
-  var LogicalAndOperator =
-  /*#__PURE__*/
-  function (_Abstract2ArgOperator) {
-    _inherits(LogicalAndOperator, _Abstract2ArgOperator);
-
-    function LogicalAndOperator() {
-      _classCallCheck(this, LogicalAndOperator);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(LogicalAndOperator).call(this));
-    }
-
-    _createClass(LogicalAndOperator, [{
-      key: "_execute",
-      value: function _execute(leftSide, rightSide, context) {
-        var leftSideResolved = this.resolveSide(leftSide, context);
-
-        if (!leftSideResolved) {
-          return false;
-        } else {
-          return this.resolveSide(rightSide, context);
-        }
-      }
-    }]);
-
-    return LogicalAndOperator;
-  }(Abstract2Arg);
-
-  LogicalAndOperator.$pattern = /^&&/;
-  var LogicalAnd = LogicalAndOperator;
-
-  var LogicalOrOperator =
-  /*#__PURE__*/
-  function (_Abstract2ArgOperator) {
-    _inherits(LogicalOrOperator, _Abstract2ArgOperator);
-
-    function LogicalOrOperator() {
-      _classCallCheck(this, LogicalOrOperator);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(LogicalOrOperator).call(this));
-    }
-
-    _createClass(LogicalOrOperator, [{
-      key: "_execute",
-      value: function _execute(leftSide, rightSide, context) {
-        var leftSideResolved = this.resolveSide(leftSide, context);
-
-        if (leftSideResolved) {
-          return true;
-        } else {
-          return this.resolveSide(rightSide, context);
-        }
-      }
-    }]);
-
-    return LogicalOrOperator;
-  }(Abstract2Arg);
-
-  LogicalOrOperator.$pattern = /^\|\|/;
-  var LogicalOr = LogicalOrOperator;
-
-  var BitwiseAndOperator =
-  /*#__PURE__*/
-  function (_Abstract2ArgOperator) {
-    _inherits(BitwiseAndOperator, _Abstract2ArgOperator);
-
-    function BitwiseAndOperator() {
-      _classCallCheck(this, BitwiseAndOperator);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(BitwiseAndOperator).call(this));
-    }
-
-    _createClass(BitwiseAndOperator, [{
-      key: "_execute",
-      value: function _execute(leftSide, rightSide, context) {
-        return this.resolveSide(leftSide, context) & this.resolveSide(rightSide, context);
-      }
-    }]);
-
-    return BitwiseAndOperator;
-  }(Abstract2Arg);
-
-  BitwiseAndOperator.$pattern = /^&/;
-  var BitwiseAnd = BitwiseAndOperator;
-
-  var BitwiseOrOperator =
-  /*#__PURE__*/
-  function (_Abstract2ArgOperator) {
-    _inherits(BitwiseOrOperator, _Abstract2ArgOperator);
-
-    function BitwiseOrOperator() {
-      _classCallCheck(this, BitwiseOrOperator);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(BitwiseOrOperator).call(this));
-    }
-
-    _createClass(BitwiseOrOperator, [{
-      key: "_execute",
-      value: function _execute(leftSide, rightSide, context) {
-        return this.resolveSide(leftSide, context) | this.resolveSide(rightSide, context);
-      }
-    }]);
-
-    return BitwiseOrOperator;
-  }(Abstract2Arg);
-
-  BitwiseOrOperator.$pattern = /^\|/;
-  var BitwiseOr = BitwiseOrOperator;
-
-  var BitwiseXorOperator =
-  /*#__PURE__*/
-  function (_Abstract2ArgOperator) {
-    _inherits(BitwiseXorOperator, _Abstract2ArgOperator);
-
-    function BitwiseXorOperator() {
-      _classCallCheck(this, BitwiseXorOperator);
-
-      return _possibleConstructorReturn(this, _getPrototypeOf(BitwiseXorOperator).call(this));
-    }
-
-    _createClass(BitwiseXorOperator, [{
-      key: "_execute",
-      value: function _execute(leftSide, rightSide, context) {
-        return this.resolveSide(leftSide, context) ^ this.resolveSide(rightSide, context);
-      }
-    }]);
-
-    return BitwiseXorOperator;
-  }(Abstract2Arg);
-
-  BitwiseXorOperator.$pattern = /^\^/;
-  var BitwiseXor = BitwiseXorOperator;
-
-  var index$1 = [MemberAccess, FunctionCall, LogicalNot, BitwiseNot, Unary.Plus, Unary.Negation, Typeof, Multiply, Divide, Modulo, Plus, Minus, GreaterEq, LessEq, Greater, Less, Instanceof, In, Identity, Nonidentity, Equality, Inequality, LogicalAnd, LogicalOr, BitwiseAnd, BitwiseOr, BitwiseXor, Conditional.Start, Conditional.End]; // set priority
+  var index$1 = [MemberAccess, FunctionCall, Logical.Not, Unary.Plus, Unary.Negation, Typeof, Arithmetic.Multiplication, Arithmetic.Division, Arithmetic.Remainder, Arithmetic.Addition, Arithmetic.Subtraction, Comparison.GreaterEq, Comparison.LessEq, Comparison.Greater, Comparison.Less, Comparison.Instanceof, Comparison.In, Comparison.Identity, Comparison.Nonidentity, Comparison.Equality, Comparison.Inequality, Logical.And, Logical.Or, Conditional.Start, Conditional.End]; // set priority
 
   for (var i = 0; i < index$1.length; i++) {
     index$1[i].$priority = index$1.length - i;
@@ -1689,7 +1653,12 @@
     }, {
       key: "isLastEntityConsumer",
       get: function get() {
-        return this.entities.length > 0 ? !operators.isOperator(this.entities[this.entities.length - 1]) : false;
+        if (this.entities.length > 0) {
+          var lastEntity = this.entities[this.entities.length - 1];
+          return lastEntity instanceof operators.FunctionCall ? true : !operators.isOperator(lastEntity);
+        } else {
+          return false;
+        }
       }
     }]);
 

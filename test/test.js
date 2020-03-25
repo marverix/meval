@@ -496,6 +496,11 @@ describe('meval', function() {
     });
 
     it('Should return true', function() {
+      var ret = meval('Date.now() - 1000 < Date.now()', testContext);
+      expect(ret).to.be.true;
+    });
+
+    it('Should return true', function() {
       var ret = meval('Number.isInteger(item.a)', testContext);
       expect(ret).to.be.true;
     });

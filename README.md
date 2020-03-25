@@ -39,9 +39,6 @@
   * `... != ...`
   * `... && ...`
   * `... || ...`
-  * `... & ...`
-  * `... | ...`
-  * `... ^ ...`
 * three-argument operator:
   * `... ? ... : ...`
 * Strings, Numbers (both Integers and Floats) and Booleans
