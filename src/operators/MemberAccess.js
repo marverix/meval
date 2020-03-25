@@ -9,15 +9,19 @@ class MemberAccessOperator extends Abstract2ArgOperator {
   }
 
   _execute (leftSide, rightSide, context) {
-    leftSide = this.resolveSide(leftSide, context);
-    rightSide = this.resolveSide(rightSide, false);
+    try {
+      leftSide = this.resolveSide(leftSide, context);
+      rightSide = this.resolveSide(rightSide, false);
 
-    let result = leftSide[rightSide];
-    if (typeof result === 'function') {
-      result = result.bind(leftSide);
+      let result = leftSide[rightSide];
+      if (typeof result === 'function') {
+        result = result.bind(leftSide);
+      }
+
+      return result;
+    } catch (e) {
+      return e;
     }
-
-    return result;
   }
 
 }

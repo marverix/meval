@@ -1,4 +1,4 @@
-/* meval v1.0.1 | Copyright 2020 (c) Marek Sierociński| https://github.com/marverix/meval/blob/master/LICENSE */
+/* meval v1.0.2 | Copyright 2020 (c) Marek Sierociński| https://github.com/marverix/meval/blob/master/LICENSE */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -834,15 +834,19 @@
     _createClass(MemberAccessOperator, [{
       key: "_execute",
       value: function _execute(leftSide, rightSide, context) {
-        leftSide = this.resolveSide(leftSide, context);
-        rightSide = this.resolveSide(rightSide, false);
-        var result = leftSide[rightSide];
+        try {
+          leftSide = this.resolveSide(leftSide, context);
+          rightSide = this.resolveSide(rightSide, false);
+          var result = leftSide[rightSide];
 
-        if (typeof result === 'function') {
-          result = result.bind(leftSide);
+          if (typeof result === 'function') {
+            result = result.bind(leftSide);
+          }
+
+          return result;
+        } catch (e) {
+          return e;
         }
-
-        return result;
       }
     }]);
 

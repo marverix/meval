@@ -376,6 +376,11 @@ describe('meval', function() {
       var ret = meval('false && false', testContext);
       expect(ret).to.be.false;
     });
+
+    it('Should not check right side', function() {
+      var ret = meval('false && item.x.notExisting', testContext);
+      expect(ret).to.be.false;
+    });
   });
 
   describe('Test 2 argument operator: ||', function() {
@@ -397,6 +402,11 @@ describe('meval', function() {
     it('Should return false', function() {
       var ret = meval('false || false', testContext);
       expect(ret).to.be.false;
+    });
+
+    it('Should not check right side', function() {
+      var ret = meval('true || item.x.notExisting', testContext);
+      expect(ret).to.be.true;
     });
   });
 
